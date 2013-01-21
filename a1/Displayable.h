@@ -1,6 +1,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <iostream>
+#include <list>
 using namespace std;
 
 struct XInfo{  
@@ -42,6 +43,20 @@ public:
 	Plane(XInfo &xinfo);
 	virtual void paint(XInfo &xinfo);
 	
+};
+
+const int SCENE_HEIGHT = 7;
+const int SCENE_WIDTH = 13;
+const int TILE_MAX = 60;
+
+class Scene: public Displayable{
+private:
+	list<int> sceneTile;
+	int size;
+public:
+	Scene();
+	Scene(XInfo &xinfo);
+	virtual void paint(XInfo &xinfo);
 };
 
 

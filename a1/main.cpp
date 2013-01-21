@@ -9,9 +9,11 @@
 #include <iostream>
 #include <list>
 #include <cstdlib>
-
+#include <sys/time.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <math.h>
+#include <stdio.h>
 
 #include "Displayable.h"
 using namespace std;
@@ -19,13 +21,18 @@ using namespace std;
 
 const int Border = 5;
 const int BufferSize = 10;
-
+const int FPS = 30;
 
 void error( string str ) {
   cerr << str << endl;
   exit(0);
 }
 
+unsigned long now() {
+	timeval tv;
+	gettimeofday(&tv, NULL);
+	return tv.tv_sec * 1000000 + tv.tv_usec;
+}
 
 void repaint( list<Displayable *> dList, XInfo &xinfo) {
     list<Displayable *>::const_iterator begin = dList.begin();
@@ -40,57 +47,62 @@ void repaint( list<Displayable *> dList, XInfo &xinfo) {
     XFlush( xinfo.display );
 }
 
-void eventloop(XInfo &xinfo)
-{   XEvent event;
+void eventloop(XInfo &xinfo){   
+	XEvent event;
     KeySym key;
-    char text[BufferSize];
+	char text[BufferSize];
     list<Displayable *> dList;           // list of Displayables
-	dList.push_front(new Plane(xinfo));
+	//dList.push_front(new Plane(xinfo));
 	//Prototype splash screen
 	Text * name = new Text(xinfo.width/2, xinfo.height/2, "Yue Huang");
-    while( true ) {   
-		XNextEvent( xinfo.display, &event );
-		XConfigureEvent xce;
-        switch( event.type ) {
-		//Window resize
-		case ConfigureNotify:
-			xce = event.xconfigure;
-			if(xce.width != xinfo.width || xce.height != xinfo.height){
-				//cout<<"resize"<<endl;
-				xinfo.setRatio(xce.height,xce.height);
-				repaint( dList, xinfo);
-			}
-			break;
+	Scene * scene = new Scene(xinfo);
+	dList.push_front(scene);
+	unsigned long lastRepaint = 0;
+    while( true ) {  
+		if(XPending(xinfo.display) > 0){
 
-     	// Repaint the window on expose events./
-        case Expose:
-		    if ( event.xexpose.count == 0 ){   
-				repaint( dList, xinfo);
-		    }
-		    break;
-      
-		// Add an item where the mouse is clicked, and repaint.       
-        /*case ButtonPress:
-		    dList.push_front(new Text(event.xbutton.x, event.xbutton.y, "Urrp!"));
-		    repaint( dList, xinfo );
-		    break;*/
-		
-        case KeyPress:
-		    int i = XLookupString( (XKeyEvent *)&event, text, BufferSize, &key, 0 );
-		    if ( i == 1 && text[0] == 'q' ){   
-				error( "Terminated normally." );
-		        XCloseDisplay(xinfo.display);
-		    }else if ( i == 1 && (text[0] == 'f' || text[0] == 'F')){
-				//Draw help screen
-				name->paint(xinfo);
-			}
-		    break;
-		
+			XNextEvent( xinfo.display, &event );
+			XConfigureEvent xce;
+	
+			switch( event.type ) {
+			//Window resize
+				case ConfigureNotify:
+					xce = event.xconfigure;
+					if(xce.width != xinfo.width || xce.height != xinfo.height){
+						//cout<<"resize"<<endl;
+						xinfo.setRatio(xce.height,xce.width);
+						repaint( dList, xinfo);
+					}
+					break;
 
-        }
-		
-		
-    }
+				case KeyPress:
+				  
+					if (XLookupString( (XKeyEvent *)&event, text, BufferSize, &key, 0 )==1) { 
+						if(text[0] == 'q' ){
+							error( "Terminated normally." );
+							XCloseDisplay(xinfo.display);
+						}else if (text[0] == 'f' || text[0] == 'F'){
+							name->paint(xinfo);
+							//TODO:add to list or remove from list
+							//or self function
+						}
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+		unsigned long end = now();
+		if (end - lastRepaint > 1000000/FPS) {
+			repaint( dList, xinfo);
+			lastRepaint = now();
+		}
+		if (XPending(xinfo.display) == 0) {
+			usleep(1000000/FPS - (end - lastRepaint));
+		}
+
+	}
 }
 
 /*
@@ -166,3 +178,17 @@ int main ( int argc, char *argv[] ) {   XInfo xinfo;
    initX(argc, argv, xinfo);
    eventloop(xinfo);
 }
+
+// Repaint the window on expose events./
+        //case Expose:
+		    //if ( event.xexpose.count == 0 ){   
+				//repaint( dList, xinfo);
+		    //}
+			
+		   // break;
+      
+		// Add an item where the mouse is clicked, and repaint.       
+        /*case ButtonPress:
+		    dList.push_front(new Text(event.xbutton.x, event.xbutton.y, "Urrp!"));
+		    repaint( dList, xinfo );
+		    break;*/
