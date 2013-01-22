@@ -1,4 +1,5 @@
 #include "Displayable.h"
+#include "Algebra.h"
 #include <cstdlib> 
 
 //Text
@@ -65,6 +66,9 @@ void Plane::movePlane(KeySym key){
       }
 }
 
+bool Plane::isCollide(XSizeHints hint, Displayable * d){
+	return d->isCollide(hint);
+}
 /////////////////////////////////////////////////////////////////////
 //Scene
 
@@ -77,7 +81,7 @@ Scene::Scene(XInfo &xinfo){
 }
 
 void Scene::paint(XInfo &xinfo){
-	static int t = 0;
+	static extrn int t = 0;
 	list<int>::iterator it = sceneTile.begin();
 	for(int i = 0;i<SCENE_WIDTH ; i +=1){
 		XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
@@ -95,5 +99,20 @@ void Scene::paint(XInfo &xinfo){
 	}
 }
 
-
+bool Scene::isCollid(XSizeHints hint){
+	list<int>::iterator it = sceneTile.begin();
+	for(int i = 0;i<SCENE_WIDTH-1 ; i +=1){
+		XSizeHints aTile;
+		bombHint.x = (t+i*size)*xinfo.wRatio;
+    	bombHint.y = (xinfo.height- (*it)*size)*xinfo.hRatio;
+    	bombHint.width = size*xinfo.wRatio;
+    	bombHint.height = (*it)*size*xinfo.hRatio;
+    	bombHint.flags = PPosition | PSize;
+    	it++;
+    	if(isCollide(hint, aTile)){
+    		return true;
+    	}
+	}
+	return false;
+}
 
