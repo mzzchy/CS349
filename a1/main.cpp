@@ -57,6 +57,8 @@ void eventloop(XInfo &xinfo){
 	Text * name = new Text(xinfo.width/2, xinfo.height/2, "Yue Huang");
 	Scene * scene = new Scene(xinfo);
 	dList.push_front(scene);
+	Plane * plane = new Plane(xinfo);
+	dList.push_front(plane);
 	unsigned long lastRepaint = 0;
     while( true ) {  
 		if(XPending(xinfo.display) > 0){
@@ -85,8 +87,13 @@ void eventloop(XInfo &xinfo){
 							name->paint(xinfo);
 							//TODO:add to list or remove from list
 							//or self function
+						}else{
+							plane->movePlane(key);
 						}
+					}else {
+						plane->movePlane(key);
 					}
+					
 					break;
 
 				default:

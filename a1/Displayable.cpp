@@ -10,18 +10,57 @@ void Text::paint(XInfo &xinfo) {
       
 //Plane
 Plane::Plane(XInfo &xinfo){
-	x = xinfo.width/2;
-	y = xinfo.height/2;
-	width = 30;
-	height = 40;
+	planeHint.x = xinfo.width/2;
+    planeHint.y = xinfo.height/2;
+    planeHint.width = 30;
+    planeHint.height = 40;
+    planeHint.flags = PPosition | PSize;
+
+	bombHint.x = xinfo.width/2;
+    bombHint.y = xinfo.height/2;
+    bombHint.width = 20;
+    bombHint.height = 20;
+    bombHint.flags = PPosition | PSize;
+
+	isBombing = false;
 }
 
 void Plane::paint(XInfo &xinfo){
+	static int t = 0;
 	XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
-		x*xinfo.wRatio, y*xinfo.hRatio, width*xinfo.wRatio, height*xinfo.hRatio);
-
+		planeHint.x*xinfo.wRatio,  (xinfo.height- planeHint.y)*xinfo.hRatio, 
+		planeHint.width*xinfo.wRatio, planeHint.height*xinfo.hRatio);
+	if(isBombing){
+		
+		XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
+		(bombHint.x + t)*xinfo.wRatio,  (xinfo.height-(bombHint.y-t))*xinfo.hRatio, 
+		bombHint.width*xinfo.wRatio, bombHint.height*xinfo.hRatio);
+		t += 1;
+	}
+	
+	//check for collision && out of drawing area
+	if(bombHint.x + t > xinfo.width || bombHint.y-t < 0){
+		isBombing = false;
+		t = 0;
+	}
 }
 
+void Plane::movePlane(KeySym key){
+	switch(key){
+     	case XK_Left: planeHint.x-=2;break;
+     	case XK_Up: planeHint.y+=2;break;
+      	case XK_Right: planeHint.x+=2;break;
+      	case XK_Down: planeHint.y-=2;break;	
+		case XK_space:
+			if(!isBombing){ 
+				isBombing= true; 
+				bombHint.x = planeHint.x+ bombHint.width;
+    			bombHint.y = planeHint.y- bombHint.height;
+			}break; //Drop bomb
+		default:
+			break;
+      }
+}
 //Scene
 
 Scene::Scene(XInfo &xinfo){

@@ -2,6 +2,7 @@
 #include <X11/Xutil.h>
 #include <iostream>
 #include <list>
+
 using namespace std;
 
 struct XInfo{  
@@ -36,12 +37,16 @@ private:
 class Plane: public Displayable{
 
 private:
-	int width, height,x, y;
-	double ratio;
+	XSizeHints planeHint;
+	XSizeHints bombHint;
+	//For simple implementation, or at least for now, only allow one bomb drop at a time
+	bool isBombing;
+ 
 public:
 	Plane();
 	Plane(XInfo &xinfo);
 	virtual void paint(XInfo &xinfo);
+	void movePlane(KeySym key);
 	
 };
 
