@@ -38,27 +38,32 @@ void repaint( list<Displayable *> dList, XInfo &xinfo) {
     list<Displayable *>::const_iterator begin = dList.begin();
    	list<Displayable *>::const_iterator end = dList.end();
 
-    XClearWindow( xinfo.display, xinfo.window );
+    //XClearWindow( xinfo.display, xinfo.window ); move to event loop
     while( begin != end ) {  
 		Displayable *d = *begin;
     	d->paint(xinfo);
         begin++;
     }
-    XFlush( xinfo.display );
+    //XFlush( xinfo.display ); same here
 }
 
 void eventloop(XInfo &xinfo){   
 	XEvent event;
     KeySym key;
 	char text[BufferSize];
-    list<Displayable *> dList;           // list of Displayables
-	//dList.push_front(new Plane(xinfo));
-	//Prototype splash screen
-	Text * name = new Text(xinfo.width/2, xinfo.height/2, "Yue Huang");
-	Scene * scene = new Scene(xinfo);
-	dList.push_front(scene);
+    list<Displayable *> dList; 
+	list<Displayable *> message;  
+        
+	bool isMessage = true;
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2, "Yue Huang"));
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2+20, "Last 3 dig: 619"));
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2+40, "Press space to bomb"));
+
+	//Scene * scene = new Scene(xinfo);
+	dList.push_front(new Scene(xinfo));
 	Plane * plane = new Plane(xinfo);
 	dList.push_front(plane);
+
 	unsigned long lastRepaint = 0;
     while( true ) {  
 		if(XPending(xinfo.display) > 0){
@@ -84,9 +89,7 @@ void eventloop(XInfo &xinfo){
 							error( "Terminated normally." );
 							XCloseDisplay(xinfo.display);
 						}else if (text[0] == 'f' || text[0] == 'F'){
-							name->paint(xinfo);
-							//TODO:add to list or remove from list
-							//or self function
+							isMessage = !isMessage;
 						}else{
 							plane->movePlane(key);
 						}
@@ -102,8 +105,13 @@ void eventloop(XInfo &xinfo){
 		}
 		unsigned long end = now();
 		if (end - lastRepaint > 1000000/FPS) {
-			repaint( dList, xinfo);
+			XClearWindow( xinfo.display, xinfo.window );
+			if(isMessage){
+				repaint(message, xinfo);
+			}
+			repaint( dList, xinfo);			
 			lastRepaint = now();
+			XFlush( xinfo.display );
 		}
 		if (XPending(xinfo.display) == 0) {
 			usleep(1000000/FPS - (end - lastRepaint));
@@ -112,9 +120,8 @@ void eventloop(XInfo &xinfo){
 	}
 }
 
-/*
- * Create the window;  initialize X.
- */
+//Create the window;  initialize X.
+
 void initX(int argc, char *argv[], XInfo &xinfo){   
 	
 	XSizeHints hints;
@@ -136,8 +143,8 @@ void initX(int argc, char *argv[], XInfo &xinfo){
 	xinfo.wRatio = 1.0;
 	xinfo.hRatio = 1.0;
 
-    hints.x = 1;
-    hints.y = 1;
+    hints.x = 0;
+    hints.y = 0;
     hints.width = 400;
     hints.height = 300;
     hints.flags = PPosition | PSize;
@@ -147,55 +154,30 @@ void initX(int argc, char *argv[], XInfo &xinfo){
     XSetStandardProperties( xinfo.display, xinfo.window, "Hello1", "Hello2", None,
                                 argv, argc, &hints );
 
-   /*
-    * Get a graphics context and set the drawing colours.
-    * Arguments to XCreateGC
-    *           display - which uses this GC
-    *           window - which uses this GC
-    *           GCflags - flags which determine which parts of the GC are used
-    *           GCdata - a struct that fills in GC data at initialization.
-    */
     xinfo.gc = XCreateGC (xinfo.display, xinfo.window, 0, 0 );
     XSetBackground( xinfo.display, xinfo.gc, background );
     XSetForeground( xinfo.display, xinfo.gc, foreground );
 
-   /*
-    * Tell the window manager what input you want.
-    */
     XSelectInput( xinfo.display, xinfo.window,
                 ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask);
-
-   /*
-    * Put the window on the screen.
-    */
     XMapRaised( xinfo.display, xinfo.window );
-	//XMapWindow (xinfo.display, xinfo.window );
+
+	//Set front
+	/*const char * fontname =  "-*-helvetica-medium-r-*-*-12-*";
+    XFontStruct * font = XLoadQueryFont (xinfo.display, fontname);
+    // If the font could not be loaded, revert to the "fixed" font. 
+    if (! font) {
+        fprintf (stderr, "unable to load font %s: using fixed\n", fontname);
+        font = XLoadQueryFont (xinfo.display, "fixed");
+    }
+    XSetFont(xinfo.display, xinfo.gc, font->fid);*/
 }
 
 
 
-/*
- * Start executing here.
- *   First initialize window.
- *   Next loop responding to events.
- *   Exit forcing window manager to clean up - cheesy, but easy.
- */
 int main ( int argc, char *argv[] ) {   XInfo xinfo;
 
    initX(argc, argv, xinfo);
    eventloop(xinfo);
 }
 
-// Repaint the window on expose events./
-        //case Expose:
-		    //if ( event.xexpose.count == 0 ){   
-				//repaint( dList, xinfo);
-		    //}
-			
-		   // break;
-      
-		// Add an item where the mouse is clicked, and repaint.       
-        /*case ButtonPress:
-		    dList.push_front(new Text(event.xbutton.x, event.xbutton.y, "Urrp!"));
-		    repaint( dList, xinfo );
-		    break;*/
