@@ -28,9 +28,11 @@ Plane::Plane(XInfo &xinfo){
 
 void Plane::paint(XInfo &xinfo){
 	static int t = 0;
+
 	XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
 		planeHint.x*xinfo.wRatio,  (xinfo.height- planeHint.y)*xinfo.hRatio, 
 		planeHint.width*xinfo.wRatio, planeHint.height*xinfo.hRatio);
+
 	if(isBombing){
 		
 		XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
