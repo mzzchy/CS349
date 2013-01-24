@@ -34,22 +34,6 @@ private:
       string s;
 };
 
-class Plane: public Displayable{
-
-private:
-	XSizeHints planeHint;
-	XSizeHints bombHint;
-	//For simple implementation, or at least for now, only allow one bomb drop at a time
-	bool isBombing;
- 
-public:
-	Plane();
-	Plane(XInfo &xinfo);
-	virtual void paint(XInfo &xinfo);
-	void movePlane(KeySym key);
-	
-};
-
 const int SCENE_HEIGHT = 7;
 const int SCENE_WIDTH = 13;
 const int TILE_MAX = 60;
@@ -58,10 +42,34 @@ class Scene: public Displayable{
 private:
 	list<int> sceneTile;
 	int size;
+	int t;
 public:
 	Scene();
 	Scene(XInfo &xinfo);
 	virtual void paint(XInfo &xinfo);
+	bool isCollide(XInfo &xinfo, XSizeHints hint);
+	bool isHintCollide(XSizeHints a, XSizeHints b);
 };
+
+class Plane: public Displayable{
+
+private:
+	XSizeHints planeHint;
+	XSizeHints bombHint;
+	//For simple implementation, or at least for now, only allow one bomb drop at a time
+	bool isBombing;
+ 	int t;
+	
+public:
+	//TODO: testing
+	Scene * s;
+	Plane(XInfo &xinfo);
+	virtual void paint(XInfo &xinfo);
+	void movePlane(KeySym key);
+	bool isCollide(XInfo &xinfo, XSizeHints hint);
+	
+};
+
+
 
 

@@ -59,10 +59,17 @@ void eventloop(XInfo &xinfo){
 	message.push_back(new Text(xinfo.width/2, xinfo.height/2+20, "Last 3 dig: 619"));
 	message.push_back(new Text(xinfo.width/2, xinfo.height/2+40, "Press space to bomb"));
 
-	//Scene * scene = new Scene(xinfo);
-	dList.push_front(new Scene(xinfo));
+	
+
+	Scene * scene = new Scene(xinfo);
 	Plane * plane = new Plane(xinfo);
+	plane->s = scene;
+
+	dList.push_front(scene);
 	dList.push_front(plane);
+
+	
+
 
 	unsigned long lastRepaint = 0;
     while( true ) {  
@@ -78,7 +85,7 @@ void eventloop(XInfo &xinfo){
 					if(xce.width != xinfo.width || xce.height != xinfo.height){
 						//cout<<"resize"<<endl;
 						xinfo.setRatio(xce.height,xce.width);
-						repaint( dList, xinfo);
+						//repaint( dList, xinfo);
 					}
 					break;
 
@@ -96,13 +103,16 @@ void eventloop(XInfo &xinfo){
 					}else {
 						plane->movePlane(key);
 					}
-					
+					/*XClearWindow( xinfo.display, xinfo.window );
+					repaint( dList, xinfo);			
+					XFlush( xinfo.display );*/
 					break;
 
 				default:
 					break;
 			}
 		}
+
 		unsigned long end = now();
 		if (end - lastRepaint > 1000000/FPS) {
 			XClearWindow( xinfo.display, xinfo.window );

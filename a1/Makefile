@@ -10,5 +10,5 @@ $(EXEC): $(OBJS)
 clean:
 	rm *.o *.*~
 
-Displayable.o: Displayable.h Displayable.cpp
+Displayable.o: Displayable.h  Displayable.cpp
 main.o : main.cpp
