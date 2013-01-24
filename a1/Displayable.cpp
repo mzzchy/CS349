@@ -12,10 +12,11 @@ void Text::paint(XInfo &xinfo) {
 ///////////////////////////////////////////////////////////////////      
 //Plane
 Plane::Plane(XInfo &xinfo){
+	//Here should change to hit box
 	planeHint.x = xinfo.width/2;
     planeHint.y = xinfo.height/2;
     planeHint.width = 30;
-    planeHint.height = 40;
+    planeHint.height = 20;
     planeHint.flags = PPosition | PSize;
 
 	bombHint.x = xinfo.width/2;
@@ -28,11 +29,37 @@ Plane::Plane(XInfo &xinfo){
 	t = 0;
 }
 
-void Plane::paint(XInfo &xinfo){
-
-	XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
+void Plane::drawPlane(XInfo &xinfo){
+	
+	/*XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
 		planeHint.x*xinfo.wRatio,  (xinfo.height- planeHint.y)*xinfo.hRatio, 
-		planeHint.width*xinfo.wRatio, planeHint.height*xinfo.hRatio);
+		planeHint.width*xinfo.wRatio, planeHint.height*xinfo.hRatio);*/
+	//Body
+	XFillArc(xinfo.display, xinfo.window, xinfo.gc,
+		planeHint.x*xinfo.wRatio,  (xinfo.height- planeHint.y)*xinfo.hRatio, 
+		30*xinfo.wRatio, 15*xinfo.hRatio, 0, 360*64);
+
+	//Tail
+	XFillArc(xinfo.display, xinfo.window, xinfo.gc,
+		(planeHint.x-10 )*xinfo.wRatio,  (xinfo.height-(planeHint.y+5))*xinfo.hRatio, 
+		5*xinfo.wRatio, 20*xinfo.hRatio, 0, 360*64); 
+	
+	XDrawLine(xinfo.display, xinfo.window, xinfo.gc, 
+			(planeHint.x+15 )*xinfo.wRatio,  (xinfo.height-(planeHint.y+0))*xinfo.hRatio, 
+			(planeHint.x+25 )*xinfo.wRatio,  (xinfo.height-(planeHint.y+8))*xinfo.hRatio);
+
+	//Top
+	XFillArc(xinfo.display, xinfo.window, xinfo.gc,
+		(planeHint.x+15 )*xinfo.wRatio,  (xinfo.height-(planeHint.y+10))*xinfo.hRatio, 
+		25*xinfo.wRatio, 7*xinfo.hRatio, 0, 360*64);
+	
+	XDrawLine(xinfo.display, xinfo.window, xinfo.gc, 
+			(planeHint.x-8 )*xinfo.wRatio,  (xinfo.height-(planeHint.y-5))*xinfo.hRatio, 
+			(planeHint.x+5 )*xinfo.wRatio,  (xinfo.height-(planeHint.y-5))*xinfo.hRatio);
+}
+
+void Plane::paint(XInfo &xinfo){
+	drawPlane(xinfo);
 
 	if(isBombing){
 		

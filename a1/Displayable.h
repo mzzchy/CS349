@@ -67,7 +67,7 @@ public:
 	virtual void paint(XInfo &xinfo);
 	void movePlane(KeySym key);
 	bool isCollide(XInfo &xinfo, XSizeHints hint);
-	
+	void drawPlane(XInfo &xinfo);
 };
 
 
