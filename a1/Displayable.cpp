@@ -21,19 +21,25 @@ Plane::Plane(XInfo &xinfo){
 
 	bombHint.x = xinfo.width/2;
     bombHint.y = xinfo.height/2;
-    bombHint.width = 20;
+    bombHint.width = 10;
     bombHint.height = 10;
     bombHint.flags = PPosition | PSize;
 
-	isBombing = false;
 	t = 0;
+	isGod = false;
+	alive = false;
+}
+
+void Plane::setGod(){
+	isGod = !isGod;
+}
+
+bool Plane::isAlive(){
+	return alive;
 }
 
 void Plane::drawPlane(XInfo &xinfo){
 	
-	/*XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
-		planeHint.x*xinfo.wRatio,  (xinfo.height- planeHint.y)*xinfo.hRatio, 
-		planeHint.width*xinfo.wRatio, planeHint.height*xinfo.hRatio);*/
 	//Body
 	XFillArc(xinfo.display, xinfo.window, xinfo.gc,
 		planeHint.x*xinfo.wRatio,  (xinfo.height- planeHint.y)*xinfo.hRatio, 
@@ -58,44 +64,62 @@ void Plane::drawPlane(XInfo &xinfo){
 			(planeHint.x+5 )*xinfo.wRatio,  (xinfo.height-(planeHint.y-5))*xinfo.hRatio);
 }
 
+void Plane::addBomb(){
+	if(bombArray.size()<MAX_BOMB_COUNT){
+		XSizeHints aBombHint = planeHint;
+		aBombHint.x = planeHint.x+ bombHint.width;
+		aBombHint.y = planeHint.y- bombHint.height;
+		bombArray.push_back(aBombHint);
+	}
+}
+
+void Plane::drawBomb(XInfo &xinfo){
+	list<XSizeHints>::iterator it = bombArray.begin();
+	for( ;it!=bombArray.end();it++){
+		XFillArc(xinfo.display, xinfo.window, xinfo.gc,
+		(*it).x*xinfo.wRatio,  (xinfo.height-(*it).y)*xinfo.hRatio, 
+		10*xinfo.wRatio, 10*xinfo.hRatio, 0, 360*64);
+		(*it).x -= 1;
+		(*it).y -= 1;
+	}
+}
+
 void Plane::paint(XInfo &xinfo){
 	drawPlane(xinfo);
+	drawBomb(xinfo);
+	t += 1;
 
-	if(isBombing){
-		
-		XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
-		(bombHint.x - t)*xinfo.wRatio,  (xinfo.height-(bombHint.y-t))*xinfo.hRatio, 
-		bombHint.width*xinfo.wRatio, bombHint.height*xinfo.hRatio);
-		t += 1;
-	}
-	//TODO: collision detection
-	//check for collision && out of drawing area
 	XSizeHints aplaneHint = planeHint;
 	aplaneHint.x *= xinfo.wRatio; 
     aplaneHint.y = (xinfo.height- aplaneHint.y)*xinfo.hRatio; 
 	aplaneHint.width *= xinfo.wRatio;
 	aplaneHint.height *= xinfo.hRatio;
+	//TODO: collision detection
    	//Check if plane hits anything
-	if(isCollide(xinfo, aplaneHint)){
+	if(!isGod&&isCollide(xinfo, aplaneHint)){
+		alive = false;
+	}
+
+	//check for bomb collision && out of drawing area
+	list<XSizeHints>::iterator it = bombArray.begin();
+	while(it!=bombArray.end()){
+		if((*it).x < 0 || (*it).y < 0){
+			bombArray.erase(it++);
+			continue;
+		}else {
+			XSizeHints abombHint = (*it);
+			abombHint.x *= xinfo.wRatio;  
+   	 		abombHint.y = (xinfo.height-abombHint.y)*xinfo.hRatio; 
+			abombHint.width *= xinfo.wRatio;
+			abombHint.height *= xinfo.hRatio;
+			if(isCollide(xinfo, abombHint)){
+				bombArray.erase(it++);
+				continue;
+			}
+		}
+		it++;
+	}
 	
-	}else{
-
-	}
-
-	//Check if bomb hits anything
-	XSizeHints abombHint = bombHint;
-	abombHint.x = (abombHint.x - t)*xinfo.wRatio;  
-    abombHint.y = (xinfo.height-(abombHint.y-t))*xinfo.hRatio; 
-	abombHint.width *= xinfo.wRatio;
-	abombHint.height *= xinfo.hRatio; 
-	if(isCollide(xinfo, abombHint)){
-		isBombing = false;
-		t = 0;
-	}
-	if(bombHint.x - t < 0 || bombHint.y-t < 0){
-		isBombing = false;
-		t = 0;
-	}
 }
 
 //TODO: add XInfo &xinfo, here
@@ -105,16 +129,15 @@ void Plane::movePlane( KeySym key){
      	case XK_Up: planeHint.y+=2;break;
       	case XK_Right: planeHint.x+=2;break;
       	case XK_Down: planeHint.y-=2;break;	
-		case XK_space:
-			if(!isBombing){ 
-				isBombing= true; 
-				bombHint.x = planeHint.x+ bombHint.width;
-    			bombHint.y = planeHint.y- bombHint.height;
-			}
-			break; //Drop bomb
+		case XK_space: addBomb(); break; //Drop bomb
 		default:
 			break;
       }
+}
+
+void Plane::reset(){
+	alive = true;
+	isGod = false;
 }
 
 bool Plane::isCollide(XInfo &xinfo, XSizeHints hint){
@@ -122,10 +145,11 @@ bool Plane::isCollide(XInfo &xinfo, XSizeHints hint){
 }
 /////////////////////////////////////////////////////////////////////
 //Scene
+//Now make enemys
 
 Scene::Scene(XInfo &xinfo){
 	for(int i = 0;i<SCENE_WIDTH ; i +=1){
-		sceneTile.push_back(rand() %SCENE_HEIGHT);
+		sceneTile.push_back(rand() %3);
 	}
 	//-1 for recycling
 	size = min(xinfo.width/(SCENE_WIDTH-1), xinfo.height/SCENE_HEIGHT);
@@ -151,6 +175,13 @@ void Scene::paint(XInfo &xinfo){
 	}
 }
 
+void Scene::reset(){
+	sceneTile.clear();
+	for(int i = 0;i<SCENE_WIDTH ; i +=1){
+		sceneTile.push_back(rand() %3);
+	}
+}
+
 bool Scene::isCollide(XInfo &xinfo, XSizeHints hint){
 	list<int>::iterator it = sceneTile.begin();
 	for(int i = 0;i<SCENE_WIDTH-1 ; i +=1){
@@ -170,14 +201,10 @@ bool Scene::isCollide(XInfo &xinfo, XSizeHints hint){
 
 bool Scene::isHintCollide(XSizeHints a, XSizeHints b){
 	if(a.x+ a.width < b.x || a.x > b.x + b.width ){ 
-		//cout<<'w'<<endl;
 		return false;
 	}else if(a.y + a.height < b.y || a.y > b.y + b.height){
-		//cout<<'h'<<endl;
 		return false;
 	}
-	//cout<<"a x "<<a.x<<" y "<<a.y<<" w "<<a.width<<" h "<<a.height<<endl;
-	//cout<<"b x "<<b.x<<" y "<<b.y<<" w "<<b.width<<" h "<<b.height<<endl;
 	return true;
 }
 

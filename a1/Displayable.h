@@ -15,6 +15,7 @@ struct XInfo{
 		hRatio = (double)newHeight/(double)height;
 		wRatio = (double)newWidth/(double)width;
 	}
+	//Pixmap	pixmap;	
 };
 
 
@@ -37,6 +38,7 @@ private:
 const int SCENE_HEIGHT = 7;
 const int SCENE_WIDTH = 13;
 const int TILE_MAX = 60;
+const int MAX_BOMB_COUNT = 6;
 
 class Scene: public Displayable{
 private:
@@ -49,6 +51,7 @@ public:
 	virtual void paint(XInfo &xinfo);
 	bool isCollide(XInfo &xinfo, XSizeHints hint);
 	bool isHintCollide(XSizeHints a, XSizeHints b);
+	void reset();
 };
 
 class Plane: public Displayable{
@@ -56,10 +59,10 @@ class Plane: public Displayable{
 private:
 	XSizeHints planeHint;
 	XSizeHints bombHint;
-	//For simple implementation, or at least for now, only allow one bomb drop at a time
-	bool isBombing;
+	list<XSizeHints> bombArray;
  	int t;
-	
+	bool isGod;
+	bool alive;
 public:
 	//TODO: testing
 	Scene * s;
@@ -67,7 +70,14 @@ public:
 	virtual void paint(XInfo &xinfo);
 	void movePlane(KeySym key);
 	bool isCollide(XInfo &xinfo, XSizeHints hint);
+	void setGod();
+	bool isAlive();
+	void reset();
+private:
 	void drawPlane(XInfo &xinfo);
+	void drawBomb(XInfo &xinfo);
+	void addBomb();
+	
 };
 
 

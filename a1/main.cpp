@@ -51,25 +51,24 @@ void eventloop(XInfo &xinfo){
 	XEvent event;
     KeySym key;
 	char text[BufferSize];
-    list<Displayable *> dList; 
+   // list<Displayable *> dList; 
 	list<Displayable *> message;  
         
 	bool isMessage = true;
 	message.push_back(new Text(xinfo.width/2, xinfo.height/2, "Yue Huang"));
 	message.push_back(new Text(xinfo.width/2, xinfo.height/2+20, "Last 3 dig: 619"));
 	message.push_back(new Text(xinfo.width/2, xinfo.height/2+40, "Press space to bomb"));
-
-	
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2+60, "Press G for turning on god mode"));
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2+60, "Press S for start/restart "));
 
 	Scene * scene = new Scene(xinfo);
 	Plane * plane = new Plane(xinfo);
 	plane->s = scene;
-
+/*
 	dList.push_front(scene);
-	dList.push_front(plane);
+	dList.push_front(plane);*/
 
-	
-
+	Text * lose = new Text(xinfo.width/2, xinfo.height/2-20, "You Lose");
 
 	unsigned long lastRepaint = 0;
     while( true ) {  
@@ -83,29 +82,28 @@ void eventloop(XInfo &xinfo){
 				case ConfigureNotify:
 					xce = event.xconfigure;
 					if(xce.width != xinfo.width || xce.height != xinfo.height){
-						//cout<<"resize"<<endl;
 						xinfo.setRatio(xce.height,xce.width);
-						//repaint( dList, xinfo);
 					}
 					break;
-
 				case KeyPress:
-				  
 					if (XLookupString( (XKeyEvent *)&event, text, BufferSize, &key, 0 )==1) { 
 						if(text[0] == 'q' ){
 							error( "Terminated normally." );
 							XCloseDisplay(xinfo.display);
 						}else if (text[0] == 'f' || text[0] == 'F'){
 							isMessage = !isMessage;
+						}else if (text[0] == 'g' || text[0] == 'G'){
+							plane->setGod();
+						}else if (text[0] == 's' || text[0] == 'S'){
+							//Start game
+							plane->reset();
+							scene->reset();
 						}else{
 							plane->movePlane(key);
 						}
 					}else {
 						plane->movePlane(key);
 					}
-					/*XClearWindow( xinfo.display, xinfo.window );
-					repaint( dList, xinfo);			
-					XFlush( xinfo.display );*/
 					break;
 
 				default:
@@ -119,18 +117,22 @@ void eventloop(XInfo &xinfo){
 			if(isMessage){
 				repaint(message, xinfo);
 			}
-			repaint( dList, xinfo);			
+			if(!plane->isAlive()){
+				lose->paint(xinfo);
+			}else{
+				plane->paint(xinfo);
+			}	
+			scene->paint(xinfo);
 			lastRepaint = now();
+			
 			XFlush( xinfo.display );
 		}
 		if (XPending(xinfo.display) == 0) {
 			usleep(1000000/FPS - (end - lastRepaint));
 		}
-
+		
 	}
 }
-
-//Create the window;  initialize X.
 
 void initX(int argc, char *argv[], XInfo &xinfo){   
 	
@@ -165,22 +167,18 @@ void initX(int argc, char *argv[], XInfo &xinfo){
                                 argv, argc, &hints );
 
     xinfo.gc = XCreateGC (xinfo.display, xinfo.window, 0, 0 );
+
+	//Double buffer
+	/*int depth = DefaultDepth(xinfo.display, DefaultScreen(xinfo.display));
+	xinfo.pixmap = XCreatePixmap(xinfo.display, xinfo.window, hints.width, hints.height, depth);*/
+
     XSetBackground( xinfo.display, xinfo.gc, background );
     XSetForeground( xinfo.display, xinfo.gc, foreground );
-
+	
     XSelectInput( xinfo.display, xinfo.window,
                 ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask);
     XMapRaised( xinfo.display, xinfo.window );
-
-	//Set front
-	/*const char * fontname =  "-*-helvetica-medium-r-*-*-12-*";
-    XFontStruct * font = XLoadQueryFont (xinfo.display, fontname);
-    // If the font could not be loaded, revert to the "fixed" font. 
-    if (! font) {
-        fprintf (stderr, "unable to load font %s: using fixed\n", fontname);
-        font = XLoadQueryFont (xinfo.display, "fixed");
-    }
-    XSetFont(xinfo.display, xinfo.gc, font->fid);*/
+	
 }
 
 
@@ -191,3 +189,11 @@ int main ( int argc, char *argv[] ) {   XInfo xinfo;
    eventloop(xinfo);
 }
 
+//XFreePixmap(xinfo.display, xinfo.pixmap);
+//int depth = DefaultDepth(xinfo.display, DefaultScreen(xinfo.display));
+//xinfo.pixmap = XCreatePixmap(xinfo.display, xinfo.window, width, height, depth);
+//Create the window;  initialize X.
+//Flip buffer
+//XCopyArea(xinfo.display, xinfo.pixmap, xinfo.window, xinfo.gc, 
+//0, 0, xinfo.width, xinfo.height, 10, 10);
+//XFillRectangle(xinfo.display, xinfo.window, xinfo.gc[0], width-80, height-80, 80, 80);
