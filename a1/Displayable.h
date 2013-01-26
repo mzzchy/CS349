@@ -40,9 +40,21 @@ const int SCENE_WIDTH = 13;
 const int TILE_MAX = 60;
 const int MAX_BOMB_COUNT = 6;
 
+class Enemy:public Displayable{
+	private:
+		//list<XSizeHints> bulletArray;
+		XSizeHints enemyHint;
+		XSizeHints bulletHint;
+		int x_t,y_t;
+	public:
+		Enemy(XInfo &xinfo,int x, int y);
+		virtual void paint(XInfo &xinfo);
+};
+
 class Scene: public Displayable{
 private:
 	list<int> sceneTile;
+	list<Enemy*> enemyList;
 	int size;
 	int t;
 public:
@@ -53,6 +65,7 @@ public:
 	bool isHintCollide(XSizeHints a, XSizeHints b);
 	void reset();
 };
+
 
 class Plane: public Displayable{
 

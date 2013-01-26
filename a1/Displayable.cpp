@@ -125,10 +125,10 @@ void Plane::paint(XInfo &xinfo){
 //TODO: add XInfo &xinfo, here
 void Plane::movePlane( KeySym key){
 	switch(key){
-     	case XK_Left: planeHint.x-=2;break;
-     	case XK_Up: planeHint.y+=2;break;
-      	case XK_Right: planeHint.x+=2;break;
-      	case XK_Down: planeHint.y-=2;break;	
+     	case XK_Left: planeHint.x-=3;break;
+     	case XK_Up: planeHint.y+=3;break;
+      	case XK_Right: planeHint.x+=3;break;
+      	case XK_Down: planeHint.y-=3;break;	
 		case XK_space: addBomb(); break; //Drop bomb
 		default:
 			break;
@@ -157,7 +157,13 @@ Scene::Scene(XInfo &xinfo){
 }
 
 void Scene::paint(XInfo &xinfo){
-	//static extern int t = 0;
+	//Print enemy
+	list<Enemy*>::iterator enemyIt = enemyList.begin();	
+	for(;enemyIt!=enemyList.end() ; enemyIt++){
+		(*enemyIt)->paint(xinfo);
+	}
+
+	//Print tile
 	list<int>::iterator it = sceneTile.begin();
 	for(int i = 0;i<SCENE_WIDTH ; i +=1){
 		XDrawRectangle(xinfo.display, xinfo.window, xinfo.gc, 
@@ -166,11 +172,19 @@ void Scene::paint(XInfo &xinfo){
 		it++;
 	}
 	
+	
 	//Recycle
-	t -= 1;
+	t -= 2;
 	if((t+size)*xinfo.wRatio<0){
 		sceneTile.pop_front();
-		sceneTile.push_back(rand() %SCENE_HEIGHT);
+		int y = rand() %SCENE_HEIGHT;
+		sceneTile.push_back(y);
+		
+		if(rand()%4 == 0){
+			//add a new enemy to the list
+			Enemy * aEnemy  = new Enemy(xinfo, SCENE_WIDTH*size, y*size);
+			enemyList.push_back(aEnemy);
+		}
 		t = 0;
 	}
 }
@@ -183,6 +197,7 @@ void Scene::reset(){
 }
 
 bool Scene::isCollide(XInfo &xinfo, XSizeHints hint){
+	//Scene tile
 	list<int>::iterator it = sceneTile.begin();
 	for(int i = 0;i<SCENE_WIDTH-1 ; i +=1){
 		XSizeHints aTile;
@@ -208,4 +223,45 @@ bool Scene::isHintCollide(XSizeHints a, XSizeHints b){
 	return true;
 }
 
+////////////////////////////////////////////////////////////////
+//Enemy
+
+Enemy::Enemy(XInfo &xinfo, int x, int y){
+	
+    enemyHint.width = 20;
+    enemyHint.height = 10;
+	enemyHint.x = x;
+    enemyHint.y = y+enemyHint.height ;
+    enemyHint.flags = PPosition | PSize;
+
+	bulletHint.width = 5;
+    bulletHint.height = 10;
+	bulletHint.x = x;
+    bulletHint.y = y-enemyHint.height;
+    bulletHint.flags = PPosition | PSize;
+
+	x_t = 0;
+	y_t = 0;
+}
+
+void Enemy::paint(XInfo &xinfo){
+	//TODO: add update to bullet and enemy position
+	//Enemy
+	XFillRectangle(xinfo.display, xinfo.window, xinfo.gc, 
+			(enemyHint.x-x_t)*xinfo.wRatio, (xinfo.height- enemyHint.y)*xinfo.hRatio,
+			enemyHint.width*xinfo.wRatio,  enemyHint.height*xinfo.hRatio);
+	
+	//bullet
+	XFillArc(xinfo.display, xinfo.window, xinfo.gc,
+		(bulletHint.x-x_t)*xinfo.wRatio,  (xinfo.height - (bulletHint.y+y_t))*xinfo.hRatio, 
+		bulletHint.width*xinfo.wRatio, bulletHint.height*xinfo.hRatio, 0, 360*64);
+	
+	x_t += 2;
+	y_t += 2;
+	//enemyHint.x -= 1;
+	if(bulletHint.y+y_t> xinfo.height){
+		y_t = 0;
+	}
+
+}
 
