@@ -51,24 +51,15 @@ void eventloop(XInfo &xinfo){
 	XEvent event;
     KeySym key;
 	char text[BufferSize];
-   // list<Displayable *> dList; 
 	list<Displayable *> message;  
         
 	bool isMessage = true;
-	message.push_back(new Text(xinfo.width/2, xinfo.height/2, "Yue Huang"));
-	message.push_back(new Text(xinfo.width/2, xinfo.height/2+20, "Last 3 dig: 619"));
-	message.push_back(new Text(xinfo.width/2, xinfo.height/2+40, "Press space to bomb"));
-	message.push_back(new Text(xinfo.width/2, xinfo.height/2+60, "Press G for turning on god mode"));
-	message.push_back(new Text(xinfo.width/2, xinfo.height/2+60, "Press S for start/restart "));
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2, "Yue Huang(619)"));
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2+20, "space:bomb"));
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2+40, "g:god mode"));
+	message.push_back(new Text(xinfo.width/2, xinfo.height/2+60, "s:start/restart "));
 
 	Scene * scene = new Scene(xinfo);
-	Plane * plane = new Plane(xinfo);
-	plane->s = scene;
-/*
-	dList.push_front(scene);
-	dList.push_front(plane);*/
-
-	Text * lose = new Text(xinfo.width/2, xinfo.height/2-20, "You Lose");
 
 	unsigned long lastRepaint = 0;
     while( true ) {  
@@ -90,20 +81,11 @@ void eventloop(XInfo &xinfo){
 						if(text[0] == 'q' ){
 							error( "Terminated normally." );
 							XCloseDisplay(xinfo.display);
-						}else if (text[0] == 'f' || text[0] == 'F'){
+						}else if(text[0] == 'f' ||text[0] == 'F'){
 							isMessage = !isMessage;
-						}else if (text[0] == 'g' || text[0] == 'G'){
-							plane->setGod();
-						}else if (text[0] == 's' || text[0] == 'S'){
-							//Start game
-							plane->reset();
-							scene->reset();
-						}else{
-							plane->movePlane(key);
 						}
-					}else {
-						plane->movePlane(key);
 					}
+					scene->getInut(key,text[0]);
 					break;
 
 				default:
@@ -117,14 +99,8 @@ void eventloop(XInfo &xinfo){
 			if(isMessage){
 				repaint(message, xinfo);
 			}
-			if(!plane->isAlive()){
-				lose->paint(xinfo);
-			}else{
-				plane->paint(xinfo);
-			}	
 			scene->paint(xinfo);
 			lastRepaint = now();
-			
 			XFlush( xinfo.display );
 		}
 		if (XPending(xinfo.display) == 0) {
