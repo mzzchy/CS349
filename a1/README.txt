@@ -1,6 +1,4 @@
 Yue Huang
-y4huang
-20329619
 CS349 A1
 
 To compile the game, run command line "make"
