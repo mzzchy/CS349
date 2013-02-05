@@ -1,48 +1,77 @@
 
+import model.*;
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BasicStroke;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public class DoozerMain extends JComponent {
+public class DoozerMain extends JComponent implements MouseListener, MouseMotionListener{
 
 	private static final long serialVersionUID = 1L;
-	/**
-	 * @param args
-	 */
 	/*
 	 * Set main window
 	 */
+	private Crane crane = new Crane();
+	
 	public static void main(String[] args) {
-		
 		DoozerMain canvas = new DoozerMain();
+		
 		JFrame f = new JFrame("Doozer Main");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setSize(400, 400);
+		f.setSize(600, 480);
 		f.setContentPane(canvas);
 		f.setVisible(true);
+		
 	}
+	
+	public DoozerMain(){
+		super();
+		addMouseListener(this);
+		addMouseMotionListener(this);
+	}
+	
+	/*
+	 * Draw things
+	 */
 	public void paintComponent(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
-		g2.translate(20, 240);
-		g2.setStroke(new BasicStroke(3));
-		g2.drawLine(0, 0, 0, -200); // vertical axis
-		g2.drawLine(0, 0, 200, 0);  // horizontal axis
-		g2.setStroke(new BasicStroke(5));   // line
-		g2.setColor(Color.RED); 
-		g2.drawLine(40, 0, 120, 0); 
-		g2.drawOval(40-4, -4, 8, 8);
-		g2.drawOval(120-4, -4, 8, 8); 
-		 // Copy last 4 lines.  Change color to GREEN.
-		// What transformations to include to have it rotate
-		// 45 degrees about the left-most endpoint?
-		g2.setColor(Color.GREEN); 
-		g2.translate(40,0);
-		g2.rotate(-Math.PI/4.0);
-		g2.translate(-40,0);
-		g2.drawLine(40, 0, 120, 0); 
-		g2.drawOval(40-4, -4, 8, 8);
-		g2.drawOval(120-4, -4, 8, 8); 
-}
+		crane.drawCrane(g);
+	}
+
+	/*
+	 * Click, Drag and release
+	 */
+	@Override
+	public void mousePressed(MouseEvent event) {
+		Point clicked = event.getPoint();
+		//Same way the normal window, x and y on top left
+		System.out.print("Click"+clicked.getX()+" "+clicked.getY());
+		//Pass the event to scene
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent event) {
+		Point clicked = event.getPoint();
+		System.out.print("Click"+clicked.getX()+" "+clicked.getY());
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent event) {
+		//Tell the system to stop doing what ever
+	}
+	
+	/*
+	 * Ignore the following event
+	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseEntered(MouseEvent event) {}
+	@Override
+	public void mouseMoved(MouseEvent event) {}
+	@Override
+	public void mouseExited(MouseEvent event) {}
+	@Override
+	public void mouseClicked(MouseEvent event) {}
 }
