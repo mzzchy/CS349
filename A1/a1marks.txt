@@ -1,0 +1,27 @@
+CS349 Assignment 1 
+Marker: Jeff Avery
+
+100 marks available
+
+Marks
+[5/5]  Compiles and runs
+- makefile and readme
+
+[38/50] Working game
+- grader mode
+- resizing works
+- helicopter moves, buildings scroll
+- collision detection on missiles/buildings
+- flickering during display
+- helicopter isn't very responsive, key handling has lag
+- start menu doesn't disappear when you start the game
+
+[15/20] Basic gameplay and tuning
+- lag when you press a key, makes gameplay difficult
+- starting window size is too small to actually play, you need to resize
+
+[5/25] Aesthetics and enhancements
+- scores, text
+
+Total
+[63/100]
