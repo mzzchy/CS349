@@ -2,8 +2,6 @@
 import model.*;
 import javax.swing.*;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -45,21 +43,22 @@ public class DoozerMain extends JComponent implements MouseListener, MouseMotion
 	 */
 	@Override
 	public void mousePressed(MouseEvent event) {
-		Point clicked = event.getPoint();
-		//Same way the normal window, x and y on top left
-		System.out.print("Click"+clicked.getX()+" "+clicked.getY());
-		//Pass the event to scene
+		//TODO:add colour change later
+		crane.handleClick(event.getPoint());
 	}
 
 	@Override
+	//if drag on someting draggable, then repaint
 	public void mouseDragged(MouseEvent event) {
-		Point clicked = event.getPoint();
-		System.out.print("Click"+clicked.getX()+" "+clicked.getY());
+		if(crane.handleDrag(event.getPoint())){
+			repaint();
+		}
 	}
 	
 	@Override
 	public void mouseReleased(MouseEvent event) {
-		//Tell the system to stop doing what ever
+		//TODO: add color change later
+		crane.handleRelease(event.getPoint());
 	}
 	
 	/*
