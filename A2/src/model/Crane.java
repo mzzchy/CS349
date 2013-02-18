@@ -6,11 +6,15 @@ import java.awt.Point;
 
 public class Crane extends Object{
 	Track track;
+	Rectangle land;
 	String hitId;
 	Point hitPoint;
 	public Crane(){
 		hitId = null;
 		hitPoint  = null;
+		//Draw land
+		land = new Rectangle(0,430,600,30,"land");
+		land.setColor(Color.gray);
 		//Draw Track
 		track = new Track(10,400,100,30,"track");
 		track.setColor(Color.BLACK);
@@ -44,18 +48,19 @@ public class Crane extends Object{
 		arm4.setAnchor(0,45,130);
 		arm3.addRect(arm4);
 		
-		Electro electro = new Electro(35,50,40,10, "electro");
+		Electro electro = new Electro(35,40,50,20, "electro");
 		electro.setColor(Color.yellow);
 		arm4.addRect(electro);
 		
 	}
 	
 	public void drawCrane(Graphics g){
+		land.paint(g);
 		track.paint(g);
 	}
 	
 	//Handle click event 
-	public void handleClick(Point point){
+	public boolean handleClick(Point point){
 		
 		hitId = track.getHitId(point);
 		hitPoint = point;
@@ -64,9 +69,11 @@ public class Crane extends Object{
 			if(hitId.endsWith("electro")){
 				Electro electro = (Electro) track.getRect("electro");
 				electro.setElectro();
+				return true;
 			}
-			System.out.print(hitId+'\n');
+//			System.out.print(hitId+'\n');
 		}
+		return false;
 	}
 	
 	public boolean handleDrag(Point point){
@@ -86,6 +93,7 @@ public class Crane extends Object{
 				Arm arm4 = (Arm) track.getRect("arm4");
 				arm4.dragToRotate(hitPoint, point);
 			}
+
 			//Update point
 			hitPoint = point;
 			return true;

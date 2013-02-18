@@ -2,11 +2,9 @@
 import model.*;
 import javax.swing.*;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.AffineTransform;
 
 public class DoozerMain extends JComponent implements MouseListener, MouseMotionListener{
 
@@ -15,7 +13,7 @@ public class DoozerMain extends JComponent implements MouseListener, MouseMotion
 	 * Set main window
 	 */
 	private Crane crane = new Crane();
-	private Blocks blocks = new Blocks();
+	//private Blocks blocks = new Blocks();
 	
 	public static void main(String[] args) {
 		DoozerMain canvas = new DoozerMain();
@@ -38,28 +36,21 @@ public class DoozerMain extends JComponent implements MouseListener, MouseMotion
 	 * Draw things
 	 */
 	public void paintComponent(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
-		AffineTransform clear =  g2.getTransform();
-		
 		crane.drawCrane(g);
-		
-		g2.setTransform(clear);
-		blocks.paint(g);
-		//Draw box, unrelated to 
-		
 	}
 
 	/*
 	 * Click, Drag and release
 	 */
 	@Override
-	//TODO:add colour change later
 	public void mousePressed(MouseEvent event) {
-		crane.handleClick(event.getPoint());
+		if(crane.handleClick(event.getPoint())){
+			repaint();
+		}
 	}
 
 	@Override
-	//if drag on someting draggable, then repaint
+	//if drag on something draggable, then repaint
 	public void mouseDragged(MouseEvent event) {
 		if(crane.handleDrag(event.getPoint())){
 			repaint();
@@ -68,7 +59,6 @@ public class DoozerMain extends JComponent implements MouseListener, MouseMotion
 	
 	@Override
 	public void mouseReleased(MouseEvent event) {
-		//TODO: add color change later
 		crane.handleRelease(event.getPoint());
 	}
 	

@@ -3,7 +3,6 @@ package model;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-//import java.awt.geom.AffineTransform;
 
 public class Track extends Rectangle{
 	
@@ -38,8 +37,4 @@ public class Track extends Rectangle{
 		}
 	}
 	
-	//Apply translate to anchor point and affine as well?
-	//Arm arm1 = (Arm) getRect("arm1");
-	//AffineTransform transform = AffineTransform.getTranslateInstance(diff, 0);
-	//arm1.setAffineTransform(transform);
 }
