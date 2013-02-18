@@ -54,13 +54,18 @@ public class Crane extends Object{
 		track.paint(g);
 	}
 	
+	//Handle click event 
 	public void handleClick(Point point){
-		//Handle click event of cane hand
+		
 		hitId = track.getHitId(point);
 		hitPoint = point;
 		
 		if(hitId != null){
-			System.out.print(hitId);
+			if(hitId.endsWith("electro")){
+				Electro electro = (Electro) track.getRect("electro");
+				electro.setElectro();
+			}
+			System.out.print(hitId+'\n');
 		}
 	}
 	
@@ -81,7 +86,7 @@ public class Crane extends Object{
 				Arm arm4 = (Arm) track.getRect("arm4");
 				arm4.dragToRotate(hitPoint, point);
 			}
-			
+			//Update point
 			hitPoint = point;
 			return true;
 		}else{
@@ -89,10 +94,10 @@ public class Crane extends Object{
 		}
 	}
 	
+	//Cancel the click
 	public void handleRelease(Point point){
 		hitId = null;
 		hitPoint = null;
-		//if we had set some click, the cancel it
 	}
 	
 }

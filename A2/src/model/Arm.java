@@ -7,6 +7,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D.Double;
 
 public class Arm extends Rectangle{
 	int angle;
@@ -21,7 +22,7 @@ public class Arm extends Rectangle{
 	public AffineTransform getAffineTransform(){
 		return affine;
 	}
-	
+	/*
 	public void setAffineTransform(AffineTransform transform){
 		affine.concatenate(transform);
 		//transform.transform(anchor, anchor);
@@ -30,7 +31,7 @@ public class Arm extends Rectangle{
 			nextArm.setAffineTransform(transform);
 		}
 	}
-	
+	*/
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -53,38 +54,37 @@ public class Arm extends Rectangle{
 	public void setAnchor(int rAngle, int onX, int onY){
 		angle = rAngle;
 		anchor.setLocation(onX, onY);
-		affine = AffineTransform.getRotateInstance(Math.toRadians(angle), anchor.getX(), anchor.getY());
+		//affine = AffineTransform.getRotateInstance(Math.toRadians(angle), anchor.getX(), anchor.getY());
 	}
 	
-	
-	
-	//TODO: fix awkward rotation
 	public void dragToRotate(Point start, Point end){
-		//Start end and anchor
-		//Calculate angle and compare to determine clockwise or counter clockwise
-		int clockwise = -1;
-		if( start.x <= end.x && start.y<= end.y){
-			clockwise = 1;
-		}else if(start.x >= end.x && start.y < end.y){
-			clockwise = 1;
-		}else if(start.x <= end.x && start.y >= end.y){
-			clockwise = 1;
-		}else if(start.x >= end.x && start.y >= end.y){
-			clockwise = 1;
+		int clockwise = -2;
+		Point2D anchorP = new Point2D.Double();
+		anchorP = affine.transform(anchor, anchorP);
+		//This seems to be working
+//		System.out.print(start+""+end+""+anchorP+'\n');
+		if(start.x > anchorP.getX() && end.x > anchorP.getX() && start.y < end.y){
+			clockwise = 2;
+		}else if(start.x < anchorP.getX() && end.x < anchorP.getX() && start.y > end.y){
+			clockwise = 2;
+		}else if(start.y < anchorP.getY() && end.x < anchorP.getY() && start.x < end.x){
+			clockwise = 2;
+		}else if(start.y > anchorP.getY() && end.x > anchorP.getY() && start.x > end.x){
+			clockwise = 2;
 		}
 		
 		angle += clockwise;
-		setAffineTransform(AffineTransform.getRotateInstance(Math.toRadians(clockwise), anchor.getX(), anchor.getY()));
+		//setAffineTransform(AffineTransform.getRotateInstance(Math.toRadians(clockwise), anchor.getX(), anchor.getY()));
 	}
 	
 	//Since track move, then anchor point should also move
-		public void setTranslate(AffineTransform transform){
+	/*	public void setTranslate(AffineTransform transform){
 			anchor =  transform.transform(anchor, null);
 			affine.concatenate(transform);
 			if(nextRect != null && nextRect instanceof Arm){ //Avoid electro for now
 				Arm nextArm = (Arm) nextRect;
 				nextArm.setTranslate(transform);
 			}
-		}
+		}*/
 	
 }

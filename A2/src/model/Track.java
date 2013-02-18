@@ -3,7 +3,7 @@ package model;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.geom.AffineTransform;
+//import java.awt.geom.AffineTransform;
 
 public class Track extends Rectangle{
 	
@@ -27,19 +27,19 @@ public class Track extends Rectangle{
 	
 	@Override
 	public boolean isHitInRectangle(Point point){
-		return (point.x>=x && point.x <= x+width && point.y>=y && point.y<=y+height);
+		return (point.x>=x+trans.x && point.x <= x+trans.x+width && point.y>=y && point.y<=y+height);
 	}
 	
 	public void dragToMove(boolean right){
-		int diff = -1;
 		if(right){
-			diff = 1;
+			trans.x += 1;
+		}else{
+			trans.x -= 1;
 		}
-		trans.x += diff;
-		
-		//Apply translate to anchor point and affine as well?
-		//Arm arm1 = (Arm) getRect("arm1");
-		//AffineTransform transform = AffineTransform.getTranslateInstance(diff, 0);
-		//arm1.setAffineTransform(transform);
 	}
+	
+	//Apply translate to anchor point and affine as well?
+	//Arm arm1 = (Arm) getRect("arm1");
+	//AffineTransform transform = AffineTransform.getTranslateInstance(diff, 0);
+	//arm1.setAffineTransform(transform);
 }
