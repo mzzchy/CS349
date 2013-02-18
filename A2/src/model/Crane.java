@@ -16,40 +16,40 @@ public class Crane extends Object{
 		land = new Rectangle(0,430,600,30,"land");
 		land.setColor(Color.gray);
 		//Draw Track
-		track = new Track(10,400,100,30,"track");
-		track.setColor(Color.BLACK);
+		track = new Track(10,400,120,30,"track");
+		track.setColor(Color.black);
 		
-		Rectangle body = new Rectangle(20,350, 80, 50, "body");
+		Rectangle body = new Rectangle(20,350, 100, 50, "body");
 		body.setColor(Color.gray);
 		track.addRect(body);
 		
-		Rectangle joint = new Rectangle(45,340 ,30,10 ,"joint" );
-		joint.setColor(Color.BLACK);
+		Rectangle joint = new Rectangle(50,340 ,30,10 ,"joint" );
+		joint.setColor(Color.black);
 		body.addRect(joint);
 		
 		//Note: each anchor point is the previous attach point, this way is very easy to set rotation
-		Arm arm1 = new Arm(45,270, 20,70,"arm1");
+		Arm arm1 = new Arm(53,270, 23,75,"arm1");
 		arm1.setColor(Color.magenta);
-		arm1.setAnchor(0, 45, 340);
+		arm1.setAnchor(0, 65, 340);
 		joint.addRect(arm1);
 		
-		Arm arm2 = new Arm(45,200, 20,70,"arm2");
+		Arm arm2 = new Arm(53,195, 23,75,"arm2");
 		arm2.setColor(Color.cyan);
-		arm2.setAnchor(0, 45, 270);
+		arm2.setAnchor(0, 65, 270);
 		arm1.addRect(arm2);
 		
-		Arm arm3 = new Arm(45,130, 20,70, "arm3");
+		Arm arm3 = new Arm(53,120, 23,75, "arm3");
 		arm3.setColor(Color.blue);
-		arm3.setAnchor(0,45,200);
+		arm3.setAnchor(0,65,195);
 		arm2.addRect(arm3);
 		
-		Arm arm4 = new Arm(45,60, 20,70, "arm4");
+		Arm arm4 = new Arm(53,45, 23,75,"arm4");
 		arm4.setColor(Color.red);
-		arm4.setAnchor(0,45,130);
+		arm4.setAnchor(0,65,120);
 		arm3.addRect(arm4);
 		
-		Electro electro = new Electro(35,40,50,20, "electro");
-		electro.setColor(Color.yellow);
+		Electro electro = new Electro(40,25,50,20, "electro");
+		electro.setColor(Color.black);
 		arm4.addRect(electro);
 		
 	}

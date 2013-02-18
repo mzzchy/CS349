@@ -20,7 +20,7 @@ public class Electro extends Rectangle{
 	public Electro(int rX, int rY, int rWidth, int rHeight, String rId) {
 		super(rX, rY, rWidth, rHeight, rId);
 		electroOn = false;
-		onColor = Color.blue;
+		onColor = Color.yellow;
 		
 		blocks = new ArrayList<Rectangle>(0);
 		//Add rectangle in it

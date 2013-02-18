@@ -12,10 +12,12 @@ public class Arm extends Rectangle{
 	int angle;
 	Point2D anchor;
 	AffineTransform affine;
-	
+//	boolean isDragging;
+//	
 	public Arm(int rX, int rY, int rWidth, int rHeight, String rId) {
 		super(rX, rY, rWidth, rHeight, rId);
 		anchor = new Point2D.Double(0,0);
+//		isDragging = false;
 	}
 	
 	public AffineTransform getAffineTransform(){
