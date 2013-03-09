@@ -11,17 +11,20 @@ public class SketchMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ToolBar toolBar = new ToolBar();
-		AnimePanel slider = new AnimePanel();
-		DrawArea drawArea = new DrawArea();
+		EditPanel editPanel = new EditPanel();
+		AnimePanel animePanel = new AnimePanel();
+		DrawPanel drawPanel = new DrawPanel();
+		editPanel.addActionLink(drawPanel);
 		
 		JFrame frame = new JFrame("KSektch");
 		frame.setSize(600, 480);
-		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
-		frame.getContentPane().add(drawArea, BorderLayout.CENTER);
-		frame.getContentPane().add(slider, BorderLayout.SOUTH);
+		frame.getContentPane().add(editPanel, BorderLayout.NORTH);
+		frame.getContentPane().add(drawPanel, BorderLayout.CENTER);
+		frame.getContentPane().add(animePanel, BorderLayout.SOUTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+		
+		//Connect other component together
 	}
 
 }
