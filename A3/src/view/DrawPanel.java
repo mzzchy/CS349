@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import model.Stroke;
+import model.Graph;
 
 public class DrawPanel extends JPanel implements MouseListener, MouseMotionListener{
 	/**
@@ -19,13 +19,13 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	private static final long serialVersionUID = 1L;
 
-	Stroke stroke;
+	Graph graph;
 	String state = "DRAW"; //draw, erase, select
 	
 	public DrawPanel(){
 		super();
 		setBorder(BorderFactory.createLineBorder(Color.black));
-		stroke = new Stroke();
+		graph = new Graph();
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
@@ -36,9 +36,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		g2.setColor(Color.white);
 		g2.fillRect(0, 0, 600, 400);
 		g2.setColor(Color.black);
-		for(Point p: stroke.getPoints()){
-			g2.fillRect((int)p.getX(), (int)p.getY(), 3, 3); //size of stroke, 
-		}
+		graph.draw(g);
 	}
 	
 	@Override
@@ -46,9 +44,9 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		// TODO state
 		Point p = event.getPoint();
 		if(state == "DRAW"){
-			stroke.addPoint(p);
+			graph.startStroke(p);
 		}else if(state == "ERASE"){
-			stroke.removePoint(p);
+//			stroke.removePoint(p);
 		}
 		repaint();
 	}
@@ -59,9 +57,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		//add point
 		Point p = event.getPoint();
 		if(state == "DRAW"){
-			stroke.addPoint(p);
+			graph.startStroke(p);
+			graph.endStroke(p);
 		}else if(state == "ERASE"){
-			stroke.removePoint(p);
+//			stroke.removePoint(p);
 		}
 		
 		repaint();
@@ -72,9 +71,9 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		// TODO Auto-generated method stub
 		Point p = event.getPoint();
 		if(state == "DRAW"){
-			stroke.addPoint(p);
+			graph.continueStroke(p);
 		}else if(state == "ERASE"){
-			stroke.removePoint(p);
+//			stroke.removePoint(p);
 		}
 		
 		repaint();
@@ -85,7 +84,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseReleased(MouseEvent event) {
 		// TODO Clear state
-		
+		Point p = event.getPoint();
+		if(state == "DRAW"){
+			graph.endStroke(p);
+		}
 	}
 	
 	
