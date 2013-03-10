@@ -36,7 +36,7 @@ public class Graph {
 	
 	public void removeStroke(Point p){
 		Rectangle eraser = new Rectangle((int)p.getX(), (int) p.getY(),15,15);
-		for (int i = 0; i < strokeList.size()-1; i++) {
+		for (int i = 0; i < strokeList.size(); i++) {
 			Stroke s = strokeList.get(i);
 			if(s.isPointOnStroke(eraser)){
 				strokeList.remove(i);
@@ -46,12 +46,11 @@ public class Graph {
 	}
 	
 	public void removeStroke(Point p1, Point p2){
-		Line2D eraser = new Line2D.Double(p1,p2);
-		for (int i = 0; i < strokeList.size()-1; i++) {
+		Line2D eraser = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+		for (int i = 0; i < strokeList.size(); i++) {
 			Stroke s = strokeList.get(i);
 			if(s.isLineIntersectStroke(eraser)){
 				strokeList.remove(i);
-				System.out.print("D\n");
 				break;
 			}
 		}

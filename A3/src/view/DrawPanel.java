@@ -62,7 +62,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			graph.startStroke(p);
 		}else if(state == "ERASE"){
 			currentPoint = p;
-			graph.removeStroke(p);
+			//graph.removeStroke(p);
 		}
 		repaint();
 	}
@@ -77,7 +77,6 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			graph.removeStroke(currentPoint,p);
 			currentPoint = p;
 		}
-		
 		repaint();
 	}
 	
@@ -104,6 +103,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}else if(state == "DRAG"){
 			setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR ));
 		}
+		//System.out.print(cmd+"\n");
 	}
 	
 	//Override for drag and select
