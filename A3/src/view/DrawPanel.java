@@ -6,6 +6,8 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -13,10 +15,12 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.Timer;
 
 import model.*;
 
-public class DrawPanel extends JPanel implements MouseListener, MouseMotionListener{
+public class DrawPanel extends JPanel implements MouseListener, MouseMotionListener, ActionListener{
 	/**
 	 * 
 	 */
@@ -26,16 +30,27 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	private Point currentPoint;
 	private String state = "DRAW"; //draw, erase, select, drag
 	private Lasso lasso;
-	
+	private long startTime = 0;
+	private long elpasedTime = 0;
+	private Timer timer;
+	private AnimePanel animeLink;
+	private static final long  PER_FRAME_TIME = 100;
 	public DrawPanel(){
 		super();
 		graph = new Graph();
 		lasso = null;
 		
+		timer = new Timer(30, this); //delay is in milisecond
+		timer.setInitialDelay(30);
+		
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR ));
+	}
+	
+	public void addActionLink(AnimePanel link){
+		animeLink = link;
 	}
 	
 	/**
@@ -65,9 +80,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}else if(state == "SELECT"){
 			lasso = null;
 		}
-//		else if(state == "DRAG"){
-//			System.out.print("a");
-//		}
+		
 		repaint();
 	}
 	
@@ -87,6 +100,9 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			currentPoint = p;
 			graph.setSelectedStroke(lasso.getBound());
 		}
+		
+		startTime = System.currentTimeMillis();
+		
 		repaint();
 	}
 		
@@ -105,8 +121,15 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			//Drag to move
 			lasso.dragToMove(currentPoint,p);
 			graph.dragToMove(currentPoint,p);
+			elpasedTime += System.currentTimeMillis() - startTime;
+			if(elpasedTime > PER_FRAME_TIME){ //Pass one sec
+				animeLink.moveTimeForward();
+				elpasedTime = 0;
+			}
+			startTime = System.currentTimeMillis();
 			currentPoint = p;
 		}
+		
 		repaint();
 	}
 	
@@ -117,13 +140,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(state == "DRAW"){
 			graph.endStroke(p);
 		}else if(state == "ERASE"){
-			graph.removeStroke(currentPoint,p);
 			currentPoint = p;
 		}else if(state == "SELECT"){
 			lasso.setPoint(p);
 		}else if(state == "DRAG"){
-			lasso.dragToMove(currentPoint,p);
-			graph.dragToMove(currentPoint,p);
 			graph.deSelectAll();
 			currentPoint = p;
 		}
@@ -147,14 +167,30 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR ));
 			lasso = null;
 		}else if(state == "ERASE"){
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR ));
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR ));
 			lasso = null;
 		}else if(state == "SELECT"){
 			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR ));
 		}else if(state == "DRAG"){
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR ));
+		}else if(state == "PLAY"){
+			//Set the graph to play mode
+			timer.start();
+			graph.setCommand("PLAY");
 		}
 		//System.out.print(cmd+"\n");
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		repaint();
+//		System.out.print("a");
+		if(graph.isAnimationDone()){
+//			System.out.print("\na");
+			timer.stop();
+			graph.setCommand("PAUSE");
+		}
+		
 	}
 	
 	@Override
@@ -163,8 +199,5 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseExited(MouseEvent event) {
 	}
-
-	
-	
 	
 }

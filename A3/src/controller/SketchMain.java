@@ -11,10 +11,14 @@ public class SketchMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		EditPanel editPanel = new EditPanel();
-		AnimePanel animePanel = new AnimePanel();
+		//Init
 		DrawPanel drawPanel = new DrawPanel();
+		AnimePanel animePanel = new AnimePanel();
+		EditPanel editPanel = new EditPanel();
+		//Link together
 		editPanel.addActionLink(drawPanel);
+		animePanel.addActionLink(drawPanel);
+		drawPanel.addActionLink(animePanel);
 		
 		JFrame frame = new JFrame("KSektch");
 		frame.setSize(600, 480);
@@ -24,7 +28,6 @@ public class SketchMain {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		//Connect other component together
 	}
 
 }

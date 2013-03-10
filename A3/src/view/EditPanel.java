@@ -8,9 +8,6 @@ import javax.swing.JToolBar;
 
 public class EditPanel extends JToolBar implements  ActionListener{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	DrawPanel link;
@@ -41,7 +38,6 @@ public class EditPanel extends JToolBar implements  ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		// TODO Auto-generated method stub
 		String cmd = event.getActionCommand();
 		link.setCommand(cmd);
 	}

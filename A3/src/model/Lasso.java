@@ -9,23 +9,22 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
 public class Lasso {
-	private Point start;
-	private int width;
-	private int height;
+	private Point start = new Point();
+	private int width = 1;
+	private int height = 1;
 	private Point trans = new Point();
 
 	public Lasso(Point p){
-		start = p;
-		width = 1;
-		height = 1;
+		start.setLocation(p);
 	}
 	
 	public void setPoint(Point p){
-		if(p.getX()< start.getX() || p.getY() < start.getY()){
-			start = p;
-		}
+		
 		width = (int)Math.abs(start.getX()-p.getX());
 		height = (int)Math.abs(start.getY()-p.getY());
+//		if(p.getX()< start.getX() && p.getY() > start.getY()){
+//			start.setLocation(p);
+//		}
 	}
 	
 	public void draw(Graphics g){
@@ -52,6 +51,6 @@ public class Lasso {
 	}
 	
 	public Rectangle getBound(){
-		return new Rectangle((int)start.getX(), (int)start.getY(), width, height);
+		return new Rectangle((int)start.getX()+(int) trans.getX(), (int)start.getY() + (int)trans.getY(), width, height);
 	}
 }

@@ -1,6 +1,5 @@
 package model;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -14,16 +13,19 @@ public class Stroke {
 	//Treat point as a points
 	private boolean isSelect = false;
 	private Point trans = new Point();
-	
+	private String state = "PAUSE"; //play and pause
+	private Frame frame;
 	public Stroke(){
 		pointList = new ArrayList<Point>(0);
+		frame = new Frame();
 	}
 	
 	public Stroke(Point p){
 		pointList = new ArrayList<Point>(1);
 		pointList.add(p);
+		frame = new Frame();
 	}
-	
+	//So there should be 2 mode, static mode and move mode
 	
 	/**
 	 * Draw
@@ -32,8 +34,14 @@ public class Stroke {
 		Graphics2D g2 = (Graphics2D) g;
 		//Reset affine
 		g2.setTransform(new AffineTransform());
-		g2.translate(trans.getX(), trans.getY());
-		
+		if(state == "PAUSE"){
+			g2.translate(trans.getX(), trans.getY());
+		}else if(state == "PLAY"){
+			trans = frame.getCurrentFrame();
+			g2.translate(trans.getX(), trans.getY());
+			//Get transform from frame factory
+		}
+		//Send message to frame
         for (int i = 0; i < pointList.size()-1; i++) {
 		    Point p1 = pointList.get(i);
 		    Point p2 = pointList.get(i+1);
@@ -41,37 +49,14 @@ public class Stroke {
 		}
 	}
 	
+	public void setComman(String cmd){
+		state = cmd;
+	}
+	
 	void addPoint(Point p){
 		pointList.add(p);
 	}
 	
-	/**
-	 * Hit test for erase
-	 */
-	public boolean isPointOnStroke(Rectangle eraser){
-		for (int i = 0; i < pointList.size()-1; i++) {
-			Point p1 = pointList.get(i);
-		    Point p2 = pointList.get(i+1);
-		    Line2D line = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-		    if(line.intersects(eraser)){			    	
-		    	return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean isLineIntersectStroke(Line2D eraser){ //use just 2 points
-		for (int i = 0; i < pointList.size()-1; i++) {
-		    Point p1 = pointList.get(i);
-		    Point p2 = pointList.get(i+1);
-		    Line2D line = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-		    if(line.intersectsLine(eraser)){
-		    	return true;
-		    }
-		}
-		
-		return false;
-	}
 	
 	/**
 	 * Select and drag to move
@@ -83,6 +68,8 @@ public class Stroke {
 	public void dragToMove(Point from, Point to){
 		if(isSelect){
 			trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
+			frame.dragToMove(from, to);
+			//
 		}
 	}
 	/**
@@ -90,12 +77,51 @@ public class Stroke {
 	 */
 	public boolean isInsideRectangle(Rectangle bound ){
 		for (int i = 0; i < pointList.size(); i++) {
-		    Point p1 = pointList.get(i);
-		    if(!bound.contains(p1)){
+			//Translate point to current position
+		    Point p = new Point(pointList.get(i));
+		    p.translate((int)trans.getX(), (int)trans.getY());
+		    
+		    if(!bound.contains(p)){
 		    	return false;
 		    }
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Hit test for erase
+	 */
+	public boolean isPointOnStroke(Rectangle eraser){
+		for (int i = 0; i < pointList.size()-1; i++) {
+			//Translate point to current position
+			Point p1 = new Point( pointList.get(i));
+		    Point p2 = new Point( pointList.get(i+1));
+		    p1.translate((int)trans.getX(), (int)trans.getY());
+		    p2.translate((int)trans.getX(), (int)trans.getY());
+		    Line2D line = new Line2D.Double(p1, p2);
+		    
+		    if(line.intersects(eraser)){			    	
+		    	return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isLineIntersectStroke(Line2D eraser){ //use just 2 points
+		for (int i = 0; i < pointList.size()-1; i++) {
+			//Translate point to current position
+			Point p1 = new Point( pointList.get(i));
+		    Point p2 = new Point( pointList.get(i+1));
+		    p1.translate((int)trans.getX(), (int)trans.getY());
+		    p2.translate((int)trans.getX(), (int)trans.getY());
+		    Line2D line = new Line2D.Double(p1, p2);
+		    
+		    if(line.intersectsLine(eraser)){
+		    	return true;
+		    }
+		}
+		
+		return false;
 	}
 }

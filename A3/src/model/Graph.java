@@ -11,6 +11,9 @@ public class Graph {
 	
 	ArrayList<Stroke> strokeList;
 	Stroke currentStroke = null;
+	int frameTime = 30;
+	String state = "PAUSE"; //or play or pause
+	
 	public Graph(){
 		strokeList = new ArrayList<Stroke>(0);
 	}
@@ -19,7 +22,29 @@ public class Graph {
 		for(Stroke s: strokeList){
 			s.draw(g);
 		}
+		//Based on time update 
+		if(state == "PLAY"){
+			frameTime -= 1;
+		}
 	}
+	
+	public void setCommand(String cmd){
+		state = cmd;
+		for(Stroke s: strokeList){
+			s.setComman(cmd);
+		}
+	}
+	
+	/**
+	 * Animation play
+	 */
+	
+	
+	public boolean isAnimationDone(){
+		return (frameTime <= 0);
+	}
+	
+	
 	/**
 	 * How to set a stroke
 	 * @param p
