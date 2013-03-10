@@ -2,9 +2,9 @@ package model;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 //Store basic pixel info
 public class Graph {
@@ -35,13 +35,26 @@ public class Graph {
 	}
 	
 	public void removeStroke(Point p){
-		//If p is in stroke, then remove
-		//must use iterator
-//		for(Stroke s: strokeList){
-//			if(s.isPointOnStroke(p)){
-//				//Remove self?, 
-//			}
-//		}
+		Rectangle eraser = new Rectangle((int)p.getX(), (int) p.getY(),15,15);
+		for (int i = 0; i < strokeList.size()-1; i++) {
+			Stroke s = strokeList.get(i);
+			if(s.isPointOnStroke(eraser)){
+				strokeList.remove(i);
+				break;
+			}
+		}
+	}
+	
+	public void removeStroke(Point p1, Point p2){
+		Line2D eraser = new Line2D.Double(p1,p2);
+		for (int i = 0; i < strokeList.size()-1; i++) {
+			Stroke s = strokeList.get(i);
+			if(s.isLineIntersectStroke(eraser)){
+				strokeList.remove(i);
+				System.out.print("D\n");
+				break;
+			}
+		}
 	}
 	
 }

@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -20,6 +21,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	private static final long serialVersionUID = 1L;
 
 	Graph graph;
+	Point currentPoint;
 	String state = "DRAW"; //draw, erase, select
 	
 	public DrawPanel(){
@@ -28,9 +30,9 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		graph = new Graph();
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		
+		setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR ));
 	}
-	//Draw arear
+	//Draw 
 	public void paintComponent(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setColor(Color.white);
@@ -40,32 +42,31 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 	
 	@Override
+	public void mouseClicked(MouseEvent event) {
+		Point p = event.getPoint();
+		if(state == "DRAW"){
+			graph.startStroke(p);
+			graph.endStroke(p);
+		}else if(state == "ERASE"){
+			graph.removeStroke(p);
+		}
+		
+		repaint();
+	}
+	
+	@Override
 	public void mousePressed(MouseEvent event) {
 		// TODO state
 		Point p = event.getPoint();
 		if(state == "DRAW"){
 			graph.startStroke(p);
 		}else if(state == "ERASE"){
-//			stroke.removePoint(p);
+			currentPoint = p;
+			graph.removeStroke(p);
 		}
 		repaint();
 	}
-	
-	@Override
-	public void mouseClicked(MouseEvent event) {
-		// TODO state
-		//add point
-		Point p = event.getPoint();
-		if(state == "DRAW"){
-			graph.startStroke(p);
-			graph.endStroke(p);
-		}else if(state == "ERASE"){
-//			stroke.removePoint(p);
-		}
 		
-		repaint();
-	}
-	
 	@Override
 	public void mouseDragged(MouseEvent event) {
 		// TODO Auto-generated method stub
@@ -73,34 +74,46 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(state == "DRAW"){
 			graph.continueStroke(p);
 		}else if(state == "ERASE"){
-//			stroke.removePoint(p);
+			graph.removeStroke(currentPoint,p);
+			currentPoint = p;
 		}
 		
 		repaint();
 	}
 	
-	
-	
 	@Override
 	public void mouseReleased(MouseEvent event) {
-		// TODO Clear state
+		
 		Point p = event.getPoint();
 		if(state == "DRAW"){
 			graph.endStroke(p);
+		}else if(state == "ERASE"){
+			graph.removeStroke(currentPoint,p);
+			currentPoint = p;
 		}
+		repaint();
 	}
 	
 	
 	public void setCommand(String cmd){
 		state = cmd;
+		if(state == "DRAW" || state == "SELECT"){
+			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR ));
+		}else if(state == "ERASE"){
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR ));
+		}else if(state == "DRAG"){
+			setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR ));
+		}
 	}
-	//Ignore
+	
+	//Override for drag and select
 	@Override
 	public void mouseEntered(MouseEvent event) {
 	}
 	@Override
 	public void mouseExited(MouseEvent event) {
 	}
+	//Ignore for now
 	@Override
 	public void mouseMoved(MouseEvent event) {
 	}

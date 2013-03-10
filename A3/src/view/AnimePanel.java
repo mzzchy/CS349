@@ -9,7 +9,6 @@ import javax.swing.JSlider;
 
 public class AnimePanel extends JPanel {
 
-
 	JButton play;
 	JButton pause;
 	JSlider timeSlider;

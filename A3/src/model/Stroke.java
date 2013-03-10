@@ -4,6 +4,8 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 public class Stroke {
@@ -33,8 +35,30 @@ public class Stroke {
 	void addPoint(Point p){
 		 pointList.add(p);
 	}
+	
 	//For erase
-	boolean isPointOnStroke(Point p){
-		return true;
+	boolean isPointOnStroke(Rectangle eraser){
+		for (int i = 0; i < pointList.size()-1; i++) {
+			    Point p1 = pointList.get(i);
+			    Point p2 = pointList.get(i+1);
+			    Line2D line = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+			    if(line.intersects(eraser)){
+			    	return true;
+			    }
+		}
+		return false;
+	}
+	
+	boolean isLineIntersectStroke(Line2D eraser){ //use just 2 points
+		for (int i = 0; i < pointList.size()-1; i++) {
+		    Point p1 = pointList.get(i);
+		    Point p2 = pointList.get(i+1);
+		    Line2D line = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+		    if(line.intersectsLine(eraser)){
+		    	return true;
+		    }
+		}
+		
+		return false;
 	}
 }
