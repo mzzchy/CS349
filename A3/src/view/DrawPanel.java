@@ -24,7 +24,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	private Graph graph;
 	private Point currentPoint;
-	private String state = "DRAW"; //draw, erase, select
+	private String state = "DRAW"; //draw, erase, select, drag
 	private Lasso lasso;
 	
 	public DrawPanel(){
@@ -82,8 +82,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}else if(state == "SELECT"){
 			lasso = new Lasso(p);
 		}else if(state == "DRAG"){
+			//Pass in the current lasso area and select self
 			//Do hit test find out objects that get selected
 			currentPoint = p;
+			graph.setSelectedStroke(lasso.getBound());
 		}
 		repaint();
 	}
@@ -102,6 +104,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}else if(state == "DRAG"){
 			//Drag to move
 			lasso.dragToMove(currentPoint,p);
+			graph.dragToMove(currentPoint,p);
 			currentPoint = p;
 		}
 		repaint();
@@ -120,6 +123,8 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			lasso.setPoint(p);
 		}else if(state == "DRAG"){
 			lasso.dragToMove(currentPoint,p);
+			graph.dragToMove(currentPoint,p);
+			graph.deSelectAll();
 			currentPoint = p;
 		}
 		repaint();

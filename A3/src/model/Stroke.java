@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ public class Stroke {
 	private ArrayList<Point> pointList;
 	//Treat point as a points
 	private boolean isSelect = false;
-//	private Point trans = new Point();
+	private Point trans = new Point();
 	
 	public Stroke(){
 		pointList = new ArrayList<Point>(0);
@@ -23,28 +24,21 @@ public class Stroke {
 		pointList.add(p);
 	}
 	
-	/**
-	 * Select and drag
-	 */
-	public void setSelect(boolean select){
-		isSelect = select;
-	}
-//	public void drag(Point p){
-//		
-//	}
 	
 	/**
 	 * Draw
 	 */
 	public void draw(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
-		//g2.translate(trans.getX(), trans.getY());
+		//Reset affine
+		g2.setTransform(new AffineTransform());
+		g2.translate(trans.getX(), trans.getY());
+		
         for (int i = 0; i < pointList.size()-1; i++) {
 		    Point p1 = pointList.get(i);
 		    Point p2 = pointList.get(i+1);
 		    g2.drawLine((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
 		}
-		
 	}
 	
 	void addPoint(Point p){
@@ -79,6 +73,18 @@ public class Stroke {
 		return false;
 	}
 	
+	/**
+	 * Select and drag to move
+	 */
+	public void setSelect(boolean select){
+		isSelect = select;
+	}
+
+	public void dragToMove(Point from, Point to){
+		if(isSelect){
+			trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
+		}
+	}
 	/**
 	 * Hit test for drag to move
 	 */

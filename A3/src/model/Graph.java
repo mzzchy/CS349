@@ -63,4 +63,29 @@ public class Graph {
 		}
 	}
 	
+	/**
+	 * Drag and select
+	 */
+	public void setSelectedStroke(Rectangle bound ){
+		for(Stroke s: strokeList){
+			if(s.isInsideRectangle(bound)){
+				s.setSelect(true);
+			}
+		}
+	}
+	
+	public void dragToMove(Point from, Point to){
+		for(Stroke s: strokeList){
+			s.dragToMove(from, to);
+		}
+	}
+	
+	public void deSelectAll(){
+		for(Stroke s: strokeList){
+			s.setSelect(false);
+		}
+	}
+	
+	
+	
 }

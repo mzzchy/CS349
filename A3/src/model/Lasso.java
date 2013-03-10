@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 
 public class Lasso {
 	private Point start;
@@ -29,7 +30,9 @@ public class Lasso {
 	
 	public void draw(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
+		g2.setTransform(new AffineTransform());
 		g2.translate(trans.getX(), trans.getY());
+		
 		g2.setStroke(new BasicStroke(2));
 		g2.setColor(Color.yellow);
 		g2.drawRect((int)start.getX(), (int)start.getY(), width, height);
