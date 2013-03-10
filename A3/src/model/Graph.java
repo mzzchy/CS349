@@ -20,7 +20,10 @@ public class Graph {
 			s.draw(g);
 		}
 	}
-	
+	/**
+	 * How to set a stroke
+	 * @param p
+	 */
 	public void startStroke(Point p){
 		currentStroke = new Stroke(p);
 		strokeList.add(currentStroke);
@@ -34,6 +37,10 @@ public class Graph {
 		currentStroke.addPoint(p);
 	}
 	
+	/**
+	 * How to remove a stroke
+	 * Either intersect with mouse, or intersect with mouse motion
+	 */
 	public void removeStroke(Point p){
 		Rectangle eraser = new Rectangle((int)p.getX(), (int) p.getY(),15,15);
 		for (int i = 0; i < strokeList.size(); i++) {

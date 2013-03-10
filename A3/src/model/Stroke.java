@@ -9,8 +9,10 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 public class Stroke {
-	ArrayList<Point> pointList;
+	private ArrayList<Point> pointList;
 	//Treat point as a points
+	private boolean isSelect = false;
+//	private Point trans = new Point();
 	
 	public Stroke(){
 		pointList = new ArrayList<Point>(0);
@@ -21,10 +23,22 @@ public class Stroke {
 		pointList.add(p);
 	}
 	
-	void draw(Graphics g){
+	/**
+	 * Select and drag
+	 */
+	public void setSelect(boolean select){
+		isSelect = select;
+	}
+//	public void drag(Point p){
+//		
+//	}
+	
+	/**
+	 * Draw
+	 */
+	public void draw(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
-        g2.setStroke(new BasicStroke(3));
-
+		//g2.translate(trans.getX(), trans.getY());
         for (int i = 0; i < pointList.size()-1; i++) {
 		    Point p1 = pointList.get(i);
 		    Point p2 = pointList.get(i+1);
@@ -32,24 +46,27 @@ public class Stroke {
 		}
 		
 	}
+	
 	void addPoint(Point p){
-		 pointList.add(p);
+		pointList.add(p);
 	}
 	
-	//For erase
-	boolean isPointOnStroke(Rectangle eraser){
+	/**
+	 * Hit test for erase
+	 */
+	public boolean isPointOnStroke(Rectangle eraser){
 		for (int i = 0; i < pointList.size()-1; i++) {
-			    Point p1 = pointList.get(i);
-			    Point p2 = pointList.get(i+1);
-			    Line2D line = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-			    if(line.intersects(eraser)){
-			    	return true;
-			    }
+			Point p1 = pointList.get(i);
+		    Point p2 = pointList.get(i+1);
+		    Line2D line = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+		    if(line.intersects(eraser)){			    	
+		    	return true;
+			}
 		}
 		return false;
 	}
 	
-	boolean isLineIntersectStroke(Line2D eraser){ //use just 2 points
+	public boolean isLineIntersectStroke(Line2D eraser){ //use just 2 points
 		for (int i = 0; i < pointList.size()-1; i++) {
 		    Point p1 = pointList.get(i);
 		    Point p2 = pointList.get(i+1);
@@ -60,5 +77,19 @@ public class Stroke {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Hit test for drag to move
+	 */
+	public boolean isInsideRectangle(Rectangle bound ){
+		for (int i = 0; i < pointList.size(); i++) {
+		    Point p1 = pointList.get(i);
+		    if(!bound.contains(p1)){
+		    	return false;
+		    }
+		}
+		
+		return true;
 	}
 }
