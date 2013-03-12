@@ -36,7 +36,7 @@ public class Stroke {
 		g2.setTransform(new AffineTransform());
 		if(state == "PAUSE"){
 			g2.translate(trans.getX(), trans.getY());
-		}else if(state == "PLAY"){
+		}else if(state == "PLAY" || state == "VIEW"){
 			trans = frame.getCurrentFrame();
 			g2.translate(trans.getX(), trans.getY());
 			//Get transform from frame factory
@@ -65,13 +65,25 @@ public class Stroke {
 		isSelect = select;
 	}
 
-	public void dragToMove(Point from, Point to){
+	//If select, put actual trans, else, push empty trans
+	public void dragToMove(Point from, Point to, int current){
 		if(isSelect){
 			trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
-			frame.dragToMove(from, to);
-			//
+			frame.dragToMove(from, to, current);
+		}else{
+			Point p = new Point();
+			frame.dragToMove(p, p, current);
 		}
 	}
+	
+	/**
+	 * Frame
+	 */
+	
+	public void setCurrentFrame(int i){
+		frame.setCurrentFrame(i);
+	}
+	
 	/**
 	 * Hit test for drag to move
 	 */

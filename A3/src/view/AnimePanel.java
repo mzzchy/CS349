@@ -10,16 +10,17 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class AnimePanel extends JPanel implements  ActionListener, ChangeListener{
 	
-	private static final int MAX_TIME = 60;
 	JButton play;
 	JButton pause;
 	JSlider timeFrame;
-	DrawPanel link;
+	DrawPanel drawLink;
+	private int SIZE = 0;
 	private static final long serialVersionUID = 1L;
 
 	public AnimePanel() {
@@ -38,28 +39,33 @@ public class AnimePanel extends JPanel implements  ActionListener, ChangeListene
 		pause.addActionListener(this); 
 		add(pause);
 		
-		timeFrame = new JSlider(JSlider.HORIZONTAL, 0, MAX_TIME, 0); //int orientation,  min,  max, init value 100 sec
-		timeFrame.setMajorTickSpacing(10);
-		timeFrame.setMinorTickSpacing(1);
+		timeFrame = new JSlider(JSlider.HORIZONTAL, 0, 0, 0); //int orientation,  min,  max, init value 100 sec
 		timeFrame.setPaintTicks(true);
-		timeFrame.setPreferredSize(new Dimension(400,30));
+		timeFrame.setPreferredSize(new Dimension(30,30));
 		timeFrame.addChangeListener(this);
 		add(timeFrame);
 		
 	}
 
 	public void addActionLink(DrawPanel drawPanel){
-		link = drawPanel;
+		drawLink = drawPanel;
 	}
 	/**
 	 * Slider action
 	 */
-	//TODO: add forward time
 	public void moveTimeForward(){
 		int currentTime = timeFrame.getValue();
 		currentTime += 1;
-		if(currentTime > MAX_TIME){
-			currentTime = MAX_TIME;
+		
+		if(currentTime > timeFrame.getMaximum()){
+			timeFrame.setMaximum(currentTime);
+			//Increase the max time and size 
+			if(currentTime > SIZE && SIZE <= 370){ 
+				SIZE += 1;
+				timeFrame.setPreferredSize(new Dimension(30 + SIZE,30)); //base size of TICK to be visible
+				SwingUtilities.updateComponentTreeUI(timeFrame);
+			}
+
 		}
 		timeFrame.setValue(currentTime);
 	}
@@ -70,15 +76,27 @@ public class AnimePanel extends JPanel implements  ActionListener, ChangeListene
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		String cmd = event.getActionCommand();
-		link.setCommand(cmd);
+		drawLink.setCommand(cmd);
 	}
 	/**
 	 * slider
 	 */
+	public int getCurrentFrame(){
+		return timeFrame.getValue();
+	}
+	
+	//only for pause mode
 	@Override
 	public void stateChanged(ChangeEvent event) {
-		
+		drawLink.setCommand("VIEW");
 	}
-
+	
+	public void respondToStateChange(boolean respond){
+		if(respond){
+			timeFrame.addChangeListener(this);
+		}else{
+			timeFrame.removeChangeListener(this);
+		}
+	}
 
 }

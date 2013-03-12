@@ -7,14 +7,15 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 //Store basic pixel info
-public class Graph {
+public class Animation {
 	
 	ArrayList<Stroke> strokeList;
 	Stroke currentStroke = null;
-	int frameTime = 30;
-	String state = "PAUSE"; //or play or pause
 	
-	public Graph(){
+	String state = "PAUSE"; //or play and view
+	int currentFrame = 0;
+	int MAX_FRAME_COUNT = 0;
+	public Animation(){
 		strokeList = new ArrayList<Stroke>(0);
 	}
 	
@@ -22,12 +23,16 @@ public class Graph {
 		for(Stroke s: strokeList){
 			s.draw(g);
 		}
-		//Based on time update 
+		//How to judge frameTime?
+		//When everyone has nothing to draw
+		//everyone is at the last frame
 		if(state == "PLAY"){
-			frameTime -= 1;
+			currentFrame += 1;
 		}
 	}
-	
+	/**
+	 * Getter and setter for state
+	 */
 	public void setCommand(String cmd){
 		state = cmd;
 		for(Stroke s: strokeList){
@@ -35,19 +40,33 @@ public class Graph {
 		}
 	}
 	
+	public String getState() {
+		return state;
+	}
+
+	/**
+	 * Create/Overwritten frame
+	 */
+	
+	public void setCurrentFrame(int i) {
+		for(Stroke s: strokeList){
+			s.setCurrentFrame(i);
+		}
+		currentFrame = i;
+		
+	}
+	
 	/**
 	 * Animation play
 	 */
-	
-	
 	public boolean isAnimationDone(){
-		return (frameTime <= 0);
+		return (currentFrame > MAX_FRAME_COUNT);
 	}
-	
+
 	
 	/**
 	 * How to set a stroke
-	 * @param p
+	 * 
 	 */
 	public void startStroke(Point p){
 		currentStroke = new Stroke(p);
@@ -99,10 +118,14 @@ public class Graph {
 		}
 	}
 	
-	public void dragToMove(Point from, Point to){
+	public void dragToMove(Point from, Point to, int current){
 		for(Stroke s: strokeList){
-			s.dragToMove(from, to);
+			s.dragToMove(from, to, current);
 		}
+		if(current > MAX_FRAME_COUNT){
+			MAX_FRAME_COUNT = current;	
+		}
+		currentFrame = current;
 	}
 	
 	public void deSelectAll(){
@@ -110,7 +133,6 @@ public class Graph {
 			s.setSelect(false);
 		}
 	}
-	
-	
+
 	
 }

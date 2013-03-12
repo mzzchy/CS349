@@ -12,36 +12,29 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.Timer;
 
 import model.*;
 
 public class DrawPanel extends JPanel implements MouseListener, MouseMotionListener, ActionListener{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	private Graph graph;
+	private Animation animation;
 	private Point currentPoint;
-	private String state = "DRAW"; //draw, erase, select, drag
+	private String drawState = "DRAW"; //draw, erase, select, drag
 	private Lasso lasso;
 	private long startTime = 0;
 	private long elpasedTime = 0;
-	private Timer timer;
+	private Timer timer = null;
 	private AnimePanel animeLink;
-	private static final long  PER_FRAME_TIME = 100;
+	private static final long  PER_FRAME_TIME = 30;
+	
 	public DrawPanel(){
 		super();
-		graph = new Graph();
+		animation = new Animation();
 		lasso = null;
-		
-		timer = new Timer(30, this); //delay is in milisecond
-		timer.setInitialDelay(30);
 		
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -62,22 +55,24 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		g2.fillRect(0, 0, 600, 480);
 		g2.setColor(Color.black);
 		g2.setStroke(new BasicStroke(3));
-		graph.draw(g);
+		animation.draw(g);
 		if(lasso != null){
 			lasso.draw(g);
 		}
 		g2.setTransform(new AffineTransform());
 	}
 	
+	
+	
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		Point p = event.getPoint();
-		if(state == "DRAW"){
-			graph.startStroke(p);
-			graph.endStroke(p);
-		}else if(state == "ERASE"){
-			graph.removeStroke(p);
-		}else if(state == "SELECT"){
+		if(drawState == "DRAW"){
+			animation.startStroke(p);
+			animation.endStroke(p);
+		}else if(drawState == "ERASE"){
+			animation.removeStroke(p);
+		}else if(drawState == "SELECT"){
 			lasso = null;
 		}
 		
@@ -88,17 +83,16 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void mousePressed(MouseEvent event) {
 
 		Point p = event.getPoint();
-		if(state == "DRAW"){
-			graph.startStroke(p);
-		}else if(state == "ERASE"){
+		if(drawState == "DRAW"){
+			animation.startStroke(p);
+		}else if(drawState == "ERASE"){
 			currentPoint = p;
-		}else if(state == "SELECT"){
+		}else if(drawState == "SELECT"){
 			lasso = new Lasso(p);
-		}else if(state == "DRAG"){
-			//Pass in the current lasso area and select self
-			//Do hit test find out objects that get selected
+		}else if(drawState == "DRAG"){
 			currentPoint = p;
-			graph.setSelectedStroke(lasso.getBound());
+			animation.setSelectedStroke(lasso.getBound());
+			animeLink.respondToStateChange(false);
 		}
 		
 		startTime = System.currentTimeMillis();
@@ -110,24 +104,26 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void mouseDragged(MouseEvent event) {
 
 		Point p = event.getPoint();
-		if(state == "DRAW"){
-			graph.continueStroke(p);
-		}else if(state == "ERASE"){
-			graph.removeStroke(currentPoint,p);
+		if(drawState == "DRAW"){
+			animation.continueStroke(p);
+		}else if(drawState == "ERASE"){
+			animation.removeStroke(currentPoint,p);
 			currentPoint = p;
-		}else if(state == "SELECT"){
+		}else if(drawState == "SELECT"){
 			lasso.setPoint(p);
-		}else if(state == "DRAG"){
+		}else if(drawState == "DRAG"){
 			//Drag to move
-			lasso.dragToMove(currentPoint,p);
-			graph.dragToMove(currentPoint,p);
 			elpasedTime += System.currentTimeMillis() - startTime;
 			if(elpasedTime > PER_FRAME_TIME){ //Pass one sec
+				lasso.dragToMove(currentPoint,p);
+				//need current frame
+				animation.dragToMove(currentPoint,p, animeLink.getCurrentFrame());
 				animeLink.moveTimeForward();
 				elpasedTime = 0;
+				currentPoint = p;
 			}
 			startTime = System.currentTimeMillis();
-			currentPoint = p;
+			
 		}
 		
 		repaint();
@@ -137,15 +133,16 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void mouseReleased(MouseEvent event) {
 		
 		Point p = event.getPoint();
-		if(state == "DRAW"){
-			graph.endStroke(p);
-		}else if(state == "ERASE"){
+		if(drawState == "DRAW"){
+			animation.endStroke(p);
+		}else if(drawState == "ERASE"){
 			currentPoint = p;
-		}else if(state == "SELECT"){
+		}else if(drawState == "SELECT"){
 			lasso.setPoint(p);
-		}else if(state == "DRAG"){
-			graph.deSelectAll();
+		}else if(drawState == "DRAG"){
+			animation.deSelectAll();
 			currentPoint = p;
+			animeLink.respondToStateChange(true);
 		}
 		repaint();
 	}
@@ -154,41 +151,64 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseMoved(MouseEvent event) {
 		Point p = event.getPoint();
-		if(state == "SELECT" && lasso != null &&lasso.isPointInRectangle(p)){
+		if(drawState == "SELECT" && lasso != null &&lasso.isPointInRectangle(p)){
 			setCommand("DRAG");
-		}else if(state == "DRAG" &&lasso != null && !lasso.isPointInRectangle(p)){
+		}else if(drawState == "DRAG" &&lasso != null && !lasso.isPointInRectangle(p)){
 			setCommand("SELECT");
 		}
 	}
 	
 	public void setCommand(String cmd){
-		state = cmd;
-		if(state == "DRAW"){
+		
+		if(cmd == "DRAW"){
 			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR ));
 			lasso = null;
-		}else if(state == "ERASE"){
+			drawState = cmd;
+		}else if(cmd == "ERASE"){
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR ));
 			lasso = null;
-		}else if(state == "SELECT"){
+			drawState = cmd;
+		}else if(cmd == "SELECT"){
 			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR ));
-		}else if(state == "DRAG"){
+			drawState = cmd;
+		}else if(cmd == "DRAG"){
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR ));
-		}else if(state == "PLAY"){
-			//Set the graph to play mode
+			drawState = cmd;
+		}else if(cmd == "PLAY"){
+			animation.setCommand("PLAY");
+			animation.setCurrentFrame(animeLink.getCurrentFrame());
+			animeLink.respondToStateChange(false);
+			lasso = null;
+			//Start a timer
+			timer = new Timer((int) PER_FRAME_TIME, this); //delay is in milisecond
+			timer.setInitialDelay(30);
 			timer.start();
-			graph.setCommand("PLAY");
+			
+		}else if(cmd == "PAUSE"){
+			animation.setCommand("PAUSE");
+			if(timer != null){
+				timer.stop();
+			}
+			timer = null;
+		}else if(cmd == "VIEW"){
+			lasso = null;
+			animation.setCurrentFrame(animeLink.getCurrentFrame());
+			animation.setCommand("VIEW");
+			repaint();
 		}
-		//System.out.print(cmd+"\n");
+	}
+	
+	public String getAnimationState(){
+		return animation.getState();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		repaint();
-//		System.out.print("a");
-		if(graph.isAnimationDone()){
-//			System.out.print("\na");
-			timer.stop();
-			graph.setCommand("PAUSE");
+		animeLink.moveTimeForward();
+		if(animation.isAnimationDone()){
+			animeLink.respondToStateChange(true);
+			setCommand("PAUSE");
 		}
 		
 	}
