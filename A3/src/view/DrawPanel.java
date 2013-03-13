@@ -93,8 +93,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			lasso = new Lasso(p);
 		}else if(drawState == "DRAG"){
 			currentPoint = p;
-			animation.setSelectedStroke(lasso.getBound());
+			animation.setSelectedStroke(lasso);
 			animeLink.respondToStateChange(false);
+			
+			//Only drag when there are actual objects in it
 		}
 		
 		startTime = System.currentTimeMillis();
@@ -116,7 +118,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}else if(drawState == "DRAG"){
 			//Drag to move
 			elpasedTime += System.currentTimeMillis() - startTime;
-			if(elpasedTime > PER_FRAME_TIME){ //Pass one sec
+			if(lasso.hasObject() && elpasedTime > PER_FRAME_TIME){ //Pass one sec
 				lasso.dragToMove(currentPoint,p);
 				//need current frame
 				animation.dragToMove(currentPoint,p, animeLink.getCurrentFrame());
@@ -142,7 +144,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}else if(drawState == "SELECT"){
 			lasso.setPoint(p);
 		}else if(drawState == "DRAG"){
-			animation.deSelectAll();
+			animation.deSelectAll(lasso);
 			currentPoint = p;
 			animeLink.respondToStateChange(true);
 		}
@@ -204,6 +206,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		return animation.getState();
 	}
 	
+	
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		repaint();
@@ -220,6 +223,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 	@Override
 	public void mouseExited(MouseEvent event) {
+	}
+
+	public void insertFrame() {
+		animation.insertFrame();
 	}
 	
 }

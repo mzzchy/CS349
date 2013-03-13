@@ -98,6 +98,11 @@ public class Stroke {
 		frame.setCurrentFrame(i);
 	}
 	
+	public void insertFrame(){
+		frame.insertStaticFrame();
+	}
+	
+	
 	/**
 	 * Hit test for drag to move
 	 */

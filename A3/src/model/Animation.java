@@ -23,9 +23,7 @@ public class Animation {
 		for(Stroke s: strokeList){
 			s.draw(g);
 		}
-		//How to judge frameTime?
-		//When everyone has nothing to draw
-		//everyone is at the last frame
+		
 		if(state == "PLAY"){
 			currentFrame += 1;
 		}
@@ -45,7 +43,7 @@ public class Animation {
 	}
 
 	/**
-	 * Create/Overwritten frame
+	 * Create/Overwritten/Insert frame
 	 */
 	
 	public void setCurrentFrame(int i) {
@@ -56,6 +54,12 @@ public class Animation {
 		
 	}
 	
+	public void insertFrame(){
+		for(Stroke s: strokeList){
+			s.insertFrame();
+		}
+	}
+	
 	/**
 	 * Animation play
 	 */
@@ -63,6 +67,7 @@ public class Animation {
 		return (currentFrame > MAX_FRAME_COUNT);
 	}
 
+	
 	
 	/**
 	 * How to set a stroke
@@ -113,10 +118,22 @@ public class Animation {
 	/**
 	 * Drag and select
 	 */
-	public void setSelectedStroke(Rectangle bound ){
+//	public void setSelectedStroke(Rectangle bound ){
+//		int count = 0;
+//		for(Stroke s: strokeList){
+//			if(s.isInsideRectangle(bound)){
+//				s.setSelect(true);
+//				count += 1;
+//			}
+//		}
+//	}
+	
+	public void setSelectedStroke(Lasso lasso ){
+		Rectangle bound = lasso.getBound();
 		for(Stroke s: strokeList){
 			if(s.isInsideRectangle(bound)){
 				s.setSelect(true);
+				lasso.setObjectIn(true);
 			}
 		}
 	}
@@ -131,11 +148,19 @@ public class Animation {
 		currentFrame = current;
 	}
 	
-	public void deSelectAll(){
+//	public void deSelectAll(){
+//		for(Stroke s: strokeList){
+//			s.setSelect(false);
+//		}
+//	}
+	
+	
+
+	public void deSelectAll(Lasso lasso){
 		for(Stroke s: strokeList){
 			s.setSelect(false);
 		}
+//		lasso.setObjectIn(false);
 	}
-
 	
 }

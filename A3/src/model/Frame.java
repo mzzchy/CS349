@@ -39,6 +39,12 @@ public class Frame {
 		currentFrame = current;
 	}
 	
+	public void insertStaticFrame(){
+		Point empty = transList.get(currentFrame);
+		transList.add(currentFrame, empty); //+1???
+		currentFrame += 1;
+	}
+	
 	public Point getCurrentFrame(){
 		currentFrame += 1;
 		if(currentFrame > transList.size()){
@@ -59,8 +65,6 @@ public class Frame {
 	
 	//Whether currenf Frame
 	public boolean isCurrentFrameVisible(){
-//		System.out.print(currentFrame+" "+endFrame+'\n');
-		
 		return (startFrame<= currentFrame && (endFrame == -1 ||currentFrame < endFrame));
 	}
 	

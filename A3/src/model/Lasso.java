@@ -13,7 +13,8 @@ public class Lasso {
 	private int width = 1;
 	private int height = 1;
 	private Point trans = new Point();
-
+	private boolean hasObjectIn = false;
+	
 	public Lasso(Point p){
 		start.setLocation(p);
 	}
@@ -23,12 +24,24 @@ public class Lasso {
 		width = (int)Math.abs(start.getX()-p.getX());
 		height = (int)Math.abs(start.getY()-p.getY());
 	}
+	/**
+	 * Whether there is object in lasso
+	 * @param has
+	 */
+	public void setObjectIn(boolean has){
+		hasObjectIn = has;
+	}
+	
+	public boolean hasObject(){
+		return hasObjectIn;
+	}
 	
 	public void draw(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setTransform(new AffineTransform());
-		g2.translate(trans.getX(), trans.getY());
-		
+		if(hasObjectIn){
+			g2.translate(trans.getX(), trans.getY());
+		}
 		g2.setStroke(new BasicStroke(2));
 		g2.setColor(Color.yellow);
 		g2.drawRect((int)start.getX(), (int)start.getY(), width, height);
@@ -37,10 +50,14 @@ public class Lasso {
 	
 	public void dragToMove(Point from, Point to){
 		//Add to trans
-		trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
+		if(hasObjectIn){
+			trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
+		}
 	}
 	
-	
+	/**
+	 * Hit test
+	 */
 	
 	public boolean isPointInRectangle(Point p){
 		Rectangle bound = new Rectangle((int)start.getX()+(int) trans.getX(), (int)start.getY() + (int)trans.getY(), width, height);
