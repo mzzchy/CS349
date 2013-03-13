@@ -9,6 +9,8 @@ public class Frame {
 	 */
 	ArrayList<Point> transList = new ArrayList<Point>(0);
 	int currentFrame = 0;
+	int startFrame = 0; //the start visible frame
+	int endFrame = -1; //-1 as not existing and end
 	
 	public Frame(){
 		Point empty = new Point();
@@ -17,6 +19,7 @@ public class Frame {
 	
 	public Frame(int initFrame){
 		//????? + 1
+		startFrame = initFrame;
 		for(int i = 0; i < initFrame+1; i++){
 			Point empty = new Point();
 			transList.add(empty);
@@ -27,13 +30,13 @@ public class Frame {
 	public void dragToMove(Point from, Point to, int current){
 		if(current > transList.size()-1){ //add new frame
 			Point trans = new Point(transList.get(transList.size()-1));
-			//Check if it is about overwritten....
 			trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
 			transList.add(trans);
 		}else{ //overwritten existing frame
 			Point trans = transList.get(current);
 			trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
 		}
+		currentFrame = current;
 	}
 	
 	public Point getCurrentFrame(){
@@ -48,4 +51,18 @@ public class Frame {
 	public void setCurrentFrame(int i){
 		currentFrame = i;
 	}
+	
+	public void setEndFrame(int i){ //object is not visible afterward
+		endFrame = i;
+//		System.out.print(endFrame +'\n');
+	}
+	
+	//Whether currenf Frame
+	public boolean isCurrentFrameVisible(){
+//		System.out.print(currentFrame+" "+endFrame+'\n');
+		
+		return (startFrame<= currentFrame && (endFrame == -1 ||currentFrame < endFrame));
+	}
+	
+	
 }

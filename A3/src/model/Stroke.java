@@ -31,23 +31,37 @@ public class Stroke {
 	 * Draw
 	 */
 	public void draw(Graphics g){
-		Graphics2D g2 = (Graphics2D) g;
-		//Reset affine
-		g2.setTransform(new AffineTransform());
-		if(state == "PAUSE"){
-			g2.translate(trans.getX(), trans.getY());
-		}else if(state == "PLAY" || state == "VIEW"){
-			trans = frame.getCurrentFrame();
-			g2.translate(trans.getX(), trans.getY());
-			//Get transform from frame factory
+		if(frame.isCurrentFrameVisible()){
+			Graphics2D g2 = (Graphics2D) g;
+			//Reset affine
+			g2.setTransform(new AffineTransform());
+			//If object is visible
+		
+			if(state == "PAUSE"){
+				g2.translate(trans.getX(), trans.getY());
+			}else if(state == "PLAY" || state == "VIEW"){
+				trans = frame.getCurrentFrame();
+				g2.translate(trans.getX(), trans.getY());
+				//Get transform from frame factory
+			}
+			//Send message to frame
+	        for (int i = 0; i < pointList.size()-1; i++) {
+			    Point p1 = pointList.get(i);
+			    Point p2 = pointList.get(i+1);
+			    g2.drawLine((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
+			}
 		}
-		//Send message to frame
-        for (int i = 0; i < pointList.size()-1; i++) {
-		    Point p1 = pointList.get(i);
-		    Point p2 = pointList.get(i+1);
-		    g2.drawLine((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
-		}
+		
 	}
+	/**
+	 * Erased at that frame
+	 * @param current
+	 */
+	public void setErased(int current){
+		frame.setEndFrame(current);
+	}
+	
+	
 	
 	public void setComman(String cmd){
 		state = cmd;

@@ -84,28 +84,31 @@ public class Animation {
 	/**
 	 * How to remove a stroke
 	 * Either intersect with mouse, or intersect with mouse motion
+	 * If erasing , set it as invisible
 	 */
+
+	//Enhancement
+	//TODO: test if we should erase if instead of keeping it?
+	//TODO: if do so, then we need to change frame file to use startFrame as an achor point
 	public void removeStroke(Point p){
 		Rectangle eraser = new Rectangle((int)p.getX(), (int) p.getY(),15,15);
-		for (int i = 0; i < strokeList.size(); i++) {
-			Stroke s = strokeList.get(i);
+		for(Stroke s: strokeList){
 			if(s.isPointOnStroke(eraser)){
-				strokeList.remove(i);
-				break;
+				s.setErased(currentFrame);
+			}
+		}
+		
+	}
+	
+	public void removeStroke(Point p1, Point p2){
+		Line2D eraser = new Line2D.Double(p1, p2);
+		for(Stroke s: strokeList){
+			if(s.isLineIntersectStroke(eraser)){
+				s.setErased(currentFrame);
 			}
 		}
 	}
 	
-	public void removeStroke(Point p1, Point p2){
-		Line2D eraser = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-		for (int i = 0; i < strokeList.size(); i++) {
-			Stroke s = strokeList.get(i);
-			if(s.isLineIntersectStroke(eraser)){
-				strokeList.remove(i);
-				break;
-			}
-		}
-	}
 	
 	/**
 	 * Drag and select

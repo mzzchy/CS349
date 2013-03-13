@@ -22,9 +22,6 @@ public class Lasso {
 		
 		width = (int)Math.abs(start.getX()-p.getX());
 		height = (int)Math.abs(start.getY()-p.getY());
-//		if(p.getX()< start.getX() && p.getY() > start.getY()){
-//			start.setLocation(p);
-//		}
 	}
 	
 	public void draw(Graphics g){

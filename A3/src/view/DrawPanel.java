@@ -84,8 +84,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 
 		Point p = event.getPoint();
 		if(drawState == "DRAW"){
+			lasso = null;
 			animation.startStroke(p);
 		}else if(drawState == "ERASE"){
+			lasso = null;
 			currentPoint = p;
 		}else if(drawState == "SELECT"){
 			lasso = new Lasso(p);
