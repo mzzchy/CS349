@@ -3,6 +3,7 @@ package model;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
@@ -119,6 +120,16 @@ public class Stroke {
 		
 		return true;
 	}
+	
+	public boolean isInsidePolygon(Polygon bound){
+		for(Point p: pointList){
+			if(!bound.contains(p)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	
 	/**
 	 * Hit test for erase

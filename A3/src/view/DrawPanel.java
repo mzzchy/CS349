@@ -114,7 +114,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			animation.removeStroke(currentPoint,p);
 			currentPoint = p;
 		}else if(drawState == "SELECT"){
-			lasso.setPoint(p);
+			lasso.addPoint(p);
 		}else if(drawState == "DRAG"){
 			//Drag to move
 			elpasedTime += System.currentTimeMillis() - startTime;
@@ -142,7 +142,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		}else if(drawState == "ERASE"){
 			currentPoint = p;
 		}else if(drawState == "SELECT"){
-			lasso.setPoint(p);
+			lasso.setLassoEnd();
 		}else if(drawState == "DRAG"){
 			animation.deSelectAll(lasso);
 			currentPoint = p;
@@ -155,9 +155,9 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseMoved(MouseEvent event) {
 		Point p = event.getPoint();
-		if(drawState == "SELECT" && lasso != null &&lasso.isPointInRectangle(p)){
+		if(drawState == "SELECT" && lasso != null &&lasso.isPointInLasso(p)){
 			setCommand("DRAG");
-		}else if(drawState == "DRAG" &&lasso != null && !lasso.isPointInRectangle(p)){
+		}else if(drawState == "DRAG" &&lasso != null && !lasso.isPointInLasso(p)){
 			setCommand("SELECT");
 		}
 	}

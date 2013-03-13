@@ -2,6 +2,7 @@ package model;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
@@ -129,9 +130,9 @@ public class Animation {
 //	}
 	
 	public void setSelectedStroke(Lasso lasso ){
-		Rectangle bound = lasso.getBound();
+		Polygon bound = lasso.getBound();
 		for(Stroke s: strokeList){
-			if(s.isInsideRectangle(bound)){
+			if(s.isInsidePolygon(bound)){
 				s.setSelect(true);
 				lasso.setObjectIn(true);
 			}
