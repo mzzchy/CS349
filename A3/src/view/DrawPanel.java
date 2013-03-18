@@ -50,9 +50,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * Draw 
 	 */
 	public void paintComponent(Graphics g){
+		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setColor(Color.white);
-		g2.fillRect(0, 0, 600, 480);
+		g2.fillRect(0, 0, getWidth(), getHeight());
 		g2.setColor(Color.black);
 		g2.setStroke(new BasicStroke(3));
 		animation.draw(g);
@@ -95,6 +96,8 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			currentPoint = p;
 			animation.setSelectedStroke(lasso);
 			animeLink.respondToStateChange(false);
+			//check which button we are pressing
+			
 			
 			//Only drag when there are actual objects in it
 		}
@@ -119,9 +122,18 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			//Drag to move
 			elpasedTime += System.currentTimeMillis() - startTime;
 			if(lasso.hasObject() && elpasedTime > PER_FRAME_TIME){ //Pass one sec
-				lasso.dragToMove(currentPoint,p);
-				//need current frame
-				animation.dragToMove(currentPoint,p, animeLink.getCurrentFrame());
+				//Check for button
+				if(event.getButton() == MouseEvent.BUTTON1){ //translate
+					AffineTransform trans = lasso.getTransAffine(currentPoint, p);
+					animation.applyAffine(trans, animeLink.getCurrentFrame());
+				}else if(event.getButton() == MouseEvent.BUTTON2){ //rotate
+					AffineTransform rotate = lasso.getRotateAffine(currentPoint,p);
+					animation.applyAffine(rotate, animeLink.getCurrentFrame());
+				}else if(event.getButton() == MouseEvent.BUTTON3){ //scale
+					AffineTransform scale = lasso.getScaleAffine(currentPoint, p);
+					animation.applyAffine(scale, animeLink.getCurrentFrame());
+				}
+				
 				animeLink.moveTimeForward();
 				elpasedTime = 0;
 				currentPoint = p;

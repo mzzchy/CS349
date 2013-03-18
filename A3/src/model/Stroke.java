@@ -5,15 +5,18 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class Stroke {
 	private ArrayList<Point> pointList;
 	//Treat point as a points
 	private boolean isSelect = false;
-	private Point trans = new Point();
+	private AffineTransform affine = new AffineTransform();
 	private String state = "PAUSE"; //play and pause
 	private Frame frame;
 	public Stroke(){
@@ -26,7 +29,6 @@ public class Stroke {
 		pointList.add(p);
 		frame = new Frame();
 	}
-	//So there should be 2 mode, static mode and move mode
 	
 	/**
 	 * Draw
@@ -37,14 +39,13 @@ public class Stroke {
 			//Reset affine
 			g2.setTransform(new AffineTransform());
 			//If object is visible
-		
 			if(state == "PAUSE"){
-				g2.translate(trans.getX(), trans.getY());
+				g2.transform(affine);
 			}else if(state == "PLAY" || state == "VIEW"){
-				trans = frame.getCurrentFrame();
-				g2.translate(trans.getX(), trans.getY());
-				//Get transform from frame factory
+				affine = frame.getCurrentTransform();
+				g2.transform(affine);
 			}
+			
 			//Send message to frame
 	        for (int i = 0; i < pointList.size()-1; i++) {
 			    Point p1 = pointList.get(i);
@@ -74,20 +75,19 @@ public class Stroke {
 	
 	
 	/**
-	 * Select and drag to move
+	 * Select and apply transformation
 	 */
 	public void setSelect(boolean select){
 		isSelect = select;
 	}
 
-	//If select, put actual trans, else, push empty trans
-	public void dragToMove(Point from, Point to, int current){
+	public void applyAffine(AffineTransform newAffine, int current) {
 		if(isSelect){
-			trans.translate((int)to.getX()-(int)from.getX(), (int)to.getY()-(int)from.getY());
-			frame.dragToMove(from, to, current);
+			affine.concatenate(newAffine);
+			frame.applyAffine(newAffine, current);
 		}else{
-			Point p = new Point();
-			frame.dragToMove(p, p, current);
+			AffineTransform empty = new AffineTransform();
+			frame.applyAffine(empty, current);
 		}
 	}
 	
@@ -107,21 +107,17 @@ public class Stroke {
 	/**
 	 * Hit test for drag to move
 	 */
-	public boolean isInsideRectangle(Rectangle bound ){
-		for (int i = 0; i < pointList.size(); i++) {
-			//Translate point to current position
-		    Point p = new Point(pointList.get(i));
-		    p.translate((int)trans.getX(), (int)trans.getY());
-		    
-		    if(!bound.contains(p)){
-		    	return false;
-		    }
+	
+	public boolean isInsidePolygon(Polygon bound){
+		for(Point p: pointList){
+			if(!bound.contains(p)){
+				return false;
+			}
 		}
-		
 		return true;
 	}
 	
-	public boolean isInsidePolygon(Polygon bound){
+	public boolean isInsidePolygon(Shape bound){
 		for(Point p: pointList){
 			if(!bound.contains(p)){
 				return false;
@@ -135,35 +131,42 @@ public class Stroke {
 	 * Hit test for erase
 	 */
 	public boolean isPointOnStroke(Rectangle eraser){
-		for (int i = 0; i < pointList.size()-1; i++) {
-			//Translate point to current position
-			Point p1 = new Point( pointList.get(i));
-		    Point p2 = new Point( pointList.get(i+1));
-		    p1.translate((int)trans.getX(), (int)trans.getY());
-		    p2.translate((int)trans.getX(), (int)trans.getY());
-		    Line2D line = new Line2D.Double(p1, p2);
-		    
-		    if(line.intersects(eraser)){			    	
-		    	return true;
+		//Get inverse transform and ask for intersection
+		try {
+			AffineTransform inverse =  new AffineTransform(affine);
+			inverse.invert();
+			Shape shape = inverse.createTransformedShape(eraser);
+			for (int i = 0; i < pointList.size()-1; i++) {
+			    Line2D line = new Line2D.Double(pointList.get(i), pointList.get(i+1));
+			    if(line.intersects((Rectangle2D) shape)){			    	
+			    	return true;
+				}
 			}
-		}
-		return false;
-	}
-	
-	public boolean isLineIntersectStroke(Line2D eraser){ //use just 2 points
-		for (int i = 0; i < pointList.size()-1; i++) {
-			//Translate point to current position
-			Point p1 = new Point( pointList.get(i));
-		    Point p2 = new Point( pointList.get(i+1));
-		    p1.translate((int)trans.getX(), (int)trans.getY());
-		    p2.translate((int)trans.getX(), (int)trans.getY());
-		    Line2D line = new Line2D.Double(p1, p2);
-		    
-		    if(line.intersectsLine(eraser)){
-		    	return true;
-		    }
+		} catch (NoninvertibleTransformException e) {
+			System.out.print("Inverse fail");
 		}
 		
 		return false;
 	}
+	
+	public boolean isLineIntersectStroke(Line2D eraser){ //use just 2 points
+		
+		try {
+			AffineTransform inverse =  new AffineTransform(affine);
+			inverse.invert();
+			Shape shape = inverse.createTransformedShape(eraser);
+			for (int i = 0; i < pointList.size()-1; i++) {
+			    Line2D line = new Line2D.Double(pointList.get(i), pointList.get(i+1));
+			    if(line.intersectsLine((Line2D) shape)){
+			    	return true;
+			    }
+			}
+		} catch (NoninvertibleTransformException e) {
+			System.out.print("Inverse fail");
+		}
+		
+		return false;
+	}
+
+	
 }

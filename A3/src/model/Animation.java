@@ -2,8 +2,9 @@ package model;
 
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
@@ -69,10 +70,8 @@ public class Animation {
 	}
 
 	
-	
 	/**
-	 * How to set a stroke
-	 * 
+	 * How to draw a stroke
 	 */
 	public void startStroke(Point p){
 		currentStroke = new Stroke(p);
@@ -119,18 +118,9 @@ public class Animation {
 	/**
 	 * Drag and select
 	 */
-//	public void setSelectedStroke(Rectangle bound ){
-//		int count = 0;
-//		for(Stroke s: strokeList){
-//			if(s.isInsideRectangle(bound)){
-//				s.setSelect(true);
-//				count += 1;
-//			}
-//		}
-//	}
 	
 	public void setSelectedStroke(Lasso lasso ){
-		Polygon bound = lasso.getBound();
+		Shape bound = lasso.getBound();
 		for(Stroke s: strokeList){
 			if(s.isInsidePolygon(bound)){
 				s.setSelect(true);
@@ -139,22 +129,20 @@ public class Animation {
 		}
 	}
 	
-	public void dragToMove(Point from, Point to, int current){
+	/**
+	 * There transformation to all the stroke if selected
+	 * @param affine
+	 * @param current
+	 */
+	public void applyAffine(AffineTransform affine, int current){
 		for(Stroke s: strokeList){
-			s.dragToMove(from, to, current);
+			s.applyAffine(affine, current);
 		}
 		if(current > MAX_FRAME_COUNT){
 			MAX_FRAME_COUNT = current;	
 		}
 		currentFrame = current;
 	}
-	
-//	public void deSelectAll(){
-//		for(Stroke s: strokeList){
-//			s.setSelect(false);
-//		}
-//	}
-	
 	
 
 	public void deSelectAll(Lasso lasso){
@@ -163,5 +151,5 @@ public class Animation {
 		}
 //		lasso.setObjectIn(false);
 	}
-	
+
 }
