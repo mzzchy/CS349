@@ -3,7 +3,6 @@ package model;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -28,6 +27,12 @@ public class Stroke {
 		pointList = new ArrayList<Point>(1);
 		pointList.add(p);
 		frame = new Frame();
+	}
+	
+	public Stroke(Point p , int current){
+		pointList = new ArrayList<Point>(1);
+		pointList.add(p);
+		frame = new Frame(current);
 	}
 	
 	/**
@@ -105,25 +110,25 @@ public class Stroke {
 	
 	
 	/**
-	 * Hit test for drag to move
+	 * Hit test for drag to move, need to ask for inver transformation
 	 */
 	
-	public boolean isInsidePolygon(Polygon bound){
-		for(Point p: pointList){
-			if(!bound.contains(p)){
-				return false;
-			}
-		}
-		return true;
-	}
 	
 	public boolean isInsidePolygon(Shape bound){
-		for(Point p: pointList){
-			if(!bound.contains(p)){
-				return false;
+		try {
+			AffineTransform inverse =  new AffineTransform(affine);
+			inverse.invert();
+			Shape shape = inverse.createTransformedShape(bound);
+			for(Point p: pointList){
+				if(!shape.contains(p)){
+					return false;
+				}
 			}
+		} catch (NoninvertibleTransformException e) {
+			System.out.print("Inverse fail");
 		}
 		return true;
+		
 	}
 	
 	
@@ -136,9 +141,11 @@ public class Stroke {
 			AffineTransform inverse =  new AffineTransform(affine);
 			inverse.invert();
 			Shape shape = inverse.createTransformedShape(eraser);
+			Rectangle2D bound = shape.getBounds2D();
 			for (int i = 0; i < pointList.size()-1; i++) {
 			    Line2D line = new Line2D.Double(pointList.get(i), pointList.get(i+1));
-			    if(line.intersects((Rectangle2D) shape)){			    	
+			   
+			    if(line.intersects(bound)){			    	
 			    	return true;
 				}
 			}
@@ -155,9 +162,10 @@ public class Stroke {
 			AffineTransform inverse =  new AffineTransform(affine);
 			inverse.invert();
 			Shape shape = inverse.createTransformedShape(eraser);
+			Rectangle2D bound = shape.getBounds2D();
 			for (int i = 0; i < pointList.size()-1; i++) {
 			    Line2D line = new Line2D.Double(pointList.get(i), pointList.get(i+1));
-			    if(line.intersectsLine((Line2D) shape)){
+			    if(line.intersects(bound)){
 			    	return true;
 			    }
 			}

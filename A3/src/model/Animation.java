@@ -73,8 +73,8 @@ public class Animation {
 	/**
 	 * How to draw a stroke
 	 */
-	public void startStroke(Point p){
-		currentStroke = new Stroke(p);
+	public void startStroke(Point p, int current){
+		currentStroke = new Stroke(p, current);
 		strokeList.add(currentStroke);
 	}
 	
@@ -92,9 +92,6 @@ public class Animation {
 	 * If erasing , set it as invisible
 	 */
 
-	//Enhancement
-	//TODO: test if we should erase if instead of keeping it?
-	//TODO: if do so, then we need to change frame file to use startFrame as an achor point
 	public void removeStroke(Point p){
 		Rectangle eraser = new Rectangle((int)p.getX(), (int) p.getY(),15,15);
 		for(Stroke s: strokeList){
@@ -140,6 +137,7 @@ public class Animation {
 		}
 		if(current > MAX_FRAME_COUNT){
 			MAX_FRAME_COUNT = current;	
+//			System.out.print("MAX "+ MAX_FRAME_COUNT);
 		}
 		currentFrame = current;
 	}
@@ -149,7 +147,6 @@ public class Animation {
 		for(Stroke s: strokeList){
 			s.setSelect(false);
 		}
-//		lasso.setObjectIn(false);
 	}
 
 }

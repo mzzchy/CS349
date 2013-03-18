@@ -21,6 +21,7 @@ public class Frame {
 	public Frame(int initFrame){
 		//????? + 1
 		startFrame = initFrame;
+//		System.out.print(startFrame+"\n");
 		for(int i = 0; i < initFrame+1; i++){
 			
 			AffineTransform emptyAffine = new AffineTransform();
@@ -76,7 +77,13 @@ public class Frame {
 	
 	//Whether currenf Frame
 	public boolean isCurrentFrameVisible(){
-		return (startFrame<= currentFrame && (endFrame == -1 ||currentFrame < endFrame));
+//		System.out.print("start"+startFrame+"current"+currentFrame+"\n");
+		//Not erased
+		if(endFrame == -1 ){
+			return (startFrame<= currentFrame); 
+		}else{
+			return (startFrame<= currentFrame && currentFrame < endFrame);
+		}
 	}
 
 	

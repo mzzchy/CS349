@@ -106,11 +106,13 @@ public class Lasso {
 	public AffineTransform getRotateAffine(Point from, Point to) {
 		AffineTransform newAffine = new AffineTransform();
 		if(hasObjectIn){
-			if(from.getX()< to.getX()){	
-				newAffine.rotate(Math.toRadians(3),center.getX(),center.getY());
+			if(from.getX()< to.getX() || from.getY()< to.getY()){	
+				newAffine.rotate(Math.toRadians(3));
 				affine.concatenate(newAffine);
-			}else if(from.getX()> to.getX()){
-				newAffine.rotate(Math.toRadians(-3),center.getX(),center.getY());
+				
+			}else if(from.getX()> to.getX() || from.getY()> to.getY()){
+				//,center.getX(),center.getY()
+				newAffine.rotate(Math.toRadians(-3));
 				affine.concatenate(newAffine);
 			}
 		}
@@ -122,7 +124,7 @@ public class Lasso {
 		AffineTransform newAffine = new AffineTransform();
 		if(hasObjectIn){
 			
-			if(from.getX()< to.getX() && scaleFactor < 2.0){
+			if((from.getX()< to.getX() || from.getY()< to.getY())&& scaleFactor < 2.0){
 				Point newCenter = new Point(center);
 				newCenter.setLocation(center.getX()* 1.05, center.getY()* 1.05);
 				
@@ -133,7 +135,7 @@ public class Lasso {
 				center = newCenter;
 				scaleFactor += 0.05;
 				
-			}else if(from.getX()> to.getX() && scaleFactor > 0.5){
+			}else if((from.getX()> to.getX() || from.getY()> to.getY()) && scaleFactor > 0.5){
 				Point newCenter = new Point(center);
 				newCenter.setLocation(center.getX()* 0.95, center.getY()* 0.95);
 				
