@@ -122,10 +122,10 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 				if(event.getButton() == MouseEvent.BUTTON1){ //translate
 					AffineTransform trans = lasso.getTransAffine(currentPoint, p);
 					animation.applyAffine(trans, animeLink.getCurrentFrame());
-				}else if(event.getButton() == MouseEvent.BUTTON3){ //rotate
+				}else if(event.getButton() == MouseEvent.BUTTON2){ //rotate
 					AffineTransform rotate = lasso.getRotateAffine(currentPoint,p);
 					animation.applyAffine(rotate, animeLink.getCurrentFrame());
-				}else if(event.getButton() == MouseEvent.BUTTON2){ //scale
+				}else if(event.getButton() == MouseEvent.BUTTON3){ //scale
 					AffineTransform scale = lasso.getScaleAffine(currentPoint, p);
 					animation.applyAffine(scale, animeLink.getCurrentFrame());
 				}
