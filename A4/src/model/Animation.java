@@ -2,13 +2,25 @@ package model;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
+import java.io.File;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+ 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 //Store basic pixel info
 public class Animation {
@@ -72,11 +84,13 @@ public class Animation {
 	}
 
 	
+	
 	/**
-	 * How to draw a stroke
+	 * How to set a stroke
+	 * 
 	 */
-	public void startStroke(Point p, int current){
-		currentStroke = new Stroke(p, current);
+	public void startStroke(Point p){
+		currentStroke = new Stroke(p);
 		strokeList.add(currentStroke);
 	}
 	
@@ -94,6 +108,9 @@ public class Animation {
 	 * If erasing , set it as invisible
 	 */
 
+	//Enhancement
+	//TODO: test if we should erase if instead of keeping it?
+	//TODO: if do so, then we need to change frame file to use startFrame as an achor point
 	public void removeStroke(Point p){
 		Rectangle eraser = new Rectangle((int)p.getX(), (int) p.getY(),15,15);
 		for(Stroke s: strokeList){
@@ -117,9 +134,8 @@ public class Animation {
 	/**
 	 * Drag and select
 	 */
-	
 	public void setSelectedStroke(Lasso lasso ){
-		Shape bound = lasso.getBound();
+		Polygon bound = lasso.getBound();
 		for(Stroke s: strokeList){
 			if(s.isInsidePolygon(bound)){
 				s.setSelect(true);
@@ -128,40 +144,61 @@ public class Animation {
 		}
 	}
 	
-	/**
-	 * There transformation to all the stroke if selected
-	 * @param affine
-	 * @param current
-	 */
-	public void applyAffine(AffineTransform affine, int current){
+	public void dragToMove(Point from, Point to, int current){
 		for(Stroke s: strokeList){
-			s.applyAffine(affine, current);
+			s.dragToMove(from, to, current);
 		}
 		if(current > MAX_FRAME_COUNT){
 			MAX_FRAME_COUNT = current;	
-//			System.out.print("MAX "+ MAX_FRAME_COUNT);
 		}
 		currentFrame = current;
 	}
-	
 
 	public void deSelectAll(Lasso lasso){
 		for(Stroke s: strokeList){
 			s.setSelect(false);
 		}
+//		lasso.setObjectIn(false);
 	}
-
+	
 	/**
-	 * Save the current file into xml
+	 * Save in XML
+	 * @param fileName
 	 * @throws ParserConfigurationException 
 	 */
-	public void saveXML() throws ParserConfigurationException {
-		//TODO: save the file in current...maybe ask the xml builder handles everything?
-		XMLBuilder build = new XMLBuilder();
-		for(Stroke s: strokeList){
-			build.addStroke();
-		}
-		build.saveFile();
-	}
 
+	public void saveAs(String fileName) throws ParserConfigurationException {
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		//Creat root element
+		Document doc = docBuilder.newDocument();
+		doc.appendChild(createElement(doc));
+		
+		//Save in fileName
+		try {
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(fileName+".xml"));
+//			StreamResult result = new StreamResult(System.out);
+			transformer.transform(source, result);
+		} catch (TransformerConfigurationException e) {
+			System.out.print("Init transform error");
+		} catch (TransformerException e) {
+			System.out.print("Transform parse error");
+		}
+		
+		
+		System.out.println("File saved!");
+	}
+	
+	public Element createElement(Document doc){
+		Element rootElement = doc.createElement("KSketch");
+		
+		for(Stroke s: strokeList){
+			rootElement.appendChild(s.createElement(doc));
+		}
+		
+		return rootElement;
+	}
 }

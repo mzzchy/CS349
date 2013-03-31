@@ -14,7 +14,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -52,10 +51,9 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	 * Draw 
 	 */
 	public void paintComponent(Graphics g){
-		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setColor(Color.white);
-		g2.fillRect(0, 0, getWidth(), getHeight());
+		g2.fillRect(0, 0, 600, 480);
 		g2.setColor(Color.black);
 		g2.setStroke(new BasicStroke(3));
 		animation.draw(g);
@@ -71,7 +69,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void mouseClicked(MouseEvent event) {
 		Point p = event.getPoint();
 		if(drawState == "DRAW"){
-			animation.startStroke(p, animeLink.getCurrentFrame());
+			animation.startStroke(p);
 			animation.endStroke(p);
 		}else if(drawState == "ERASE"){
 			animation.removeStroke(p);
@@ -88,7 +86,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		Point p = event.getPoint();
 		if(drawState == "DRAW"){
 			lasso = null;
-			animation.startStroke(p,animeLink.getCurrentFrame());
+			animation.startStroke(p);
 		}else if(drawState == "ERASE"){
 			lasso = null;
 			currentPoint = p;
@@ -98,6 +96,8 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			currentPoint = p;
 			animation.setSelectedStroke(lasso);
 			animeLink.respondToStateChange(false);
+			
+			//Only drag when there are actual objects in it
 		}
 		
 		startTime = System.currentTimeMillis();
@@ -113,25 +113,16 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			animation.continueStroke(p);
 		}else if(drawState == "ERASE"){
 			animation.removeStroke(currentPoint,p);
-//			currentPoint = p;
+			currentPoint = p;
 		}else if(drawState == "SELECT"){
 			lasso.addPoint(p);
 		}else if(drawState == "DRAG"){
 			//Drag to move
 			elpasedTime += System.currentTimeMillis() - startTime;
 			if(lasso.hasObject() && elpasedTime > PER_FRAME_TIME){ //Pass one sec
-				//Check for button
-				if(SwingUtilities.isLeftMouseButton(event)){ //translate
-					AffineTransform trans = lasso.getTransAffine(currentPoint, p);
-					animation.applyAffine(trans, animeLink.getCurrentFrame());
-				}else if(SwingUtilities.isMiddleMouseButton(event)){ //rotate
-					AffineTransform rotate = lasso.getRotateAffine(currentPoint,p);
-					animation.applyAffine(rotate, animeLink.getCurrentFrame());
-				}else if(SwingUtilities.isRightMouseButton(event)){ //scale
-					AffineTransform scale = lasso.getScaleAffine(currentPoint, p);
-					animation.applyAffine(scale, animeLink.getCurrentFrame());
-				}
-				
+				lasso.dragToMove(currentPoint,p);
+				//need current frame
+				animation.dragToMove(currentPoint,p, animeLink.getCurrentFrame());
 				animeLink.moveTimeForward();
 				elpasedTime = 0;
 				currentPoint = p;
@@ -209,13 +200,6 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 			animation.setCurrentFrame(animeLink.getCurrentFrame());
 			animation.setCommand("VIEW");
 			repaint();
-		}else if(cmd == "SAVE"){
-			//Ask animation to save everything
-			try {
-				animation.saveXML();
-			} catch (ParserConfigurationException e) {
-				System.out.print(e);
-			}
 		}
 	}
 	
@@ -228,7 +212,6 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void actionPerformed(ActionEvent event) {
 		repaint();
 		animeLink.moveTimeForward();
-		animation.setCurrentFrame(animeLink.getCurrentFrame());
 		if(animation.isAnimationDone()){
 			animeLink.respondToStateChange(true);
 			setCommand("PAUSE");
@@ -245,6 +228,14 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public void insertFrame() {
 		animation.insertFrame();
+	}
+
+	public void saveAs(String fileName) {
+		try {
+			animation.saveAs(fileName);
+		} catch (ParserConfigurationException e) {
+			System.out.print("Faile to create xml");
+		}
 	}
 	
 }

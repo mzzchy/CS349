@@ -10,6 +10,7 @@ public class EditPanel extends JToolBar implements  ActionListener{
 	private static final long serialVersionUID = 1L;
 
 	DrawPanel link;
+	SaveDialog dialogLink;
 	
 	public EditPanel() {
 		super("Toolbar", JToolBar.HORIZONTAL);
@@ -30,9 +31,9 @@ public class EditPanel extends JToolBar implements  ActionListener{
 		select.addActionListener(this); 
 		add(select);
 		
-		JButton save = new JButton("Save(xml)");
+		JButton save = new JButton("Save");
 		save.setActionCommand("SAVE");
-		save.addActionListener(this); 
+		save.addActionListener(this);
 		add(save);
 	}
 	
@@ -43,7 +44,19 @@ public class EditPanel extends JToolBar implements  ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		String cmd = event.getActionCommand();
-		link.setCommand(cmd);
+		if(cmd == "SAVE"){
+			dialogLink.setVisible(true);
+			String fileName = dialogLink.getFileName();
+			if(fileName != null){
+				link.saveAs(dialogLink.getFileName());
+			}
+		}else{
+			link.setCommand(cmd);
+		}
+	}
+
+	public void addDialog(SaveDialog saveDialog) {
+		dialogLink = saveDialog;
 	}
 
 }
