@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 //import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +20,7 @@ import android.view.View;
 public class MainActivity extends Activity implements ColorPickerDialog.OnColorChangedListener{
 
 	Timer timer = null;
-	
+	static int FPS = 30;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,7 +72,7 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 	        	runOnUiThread(Timer_Tick);
 	        }
 
-	    }, 0, 1000/100);
+	    }, 0, 1000/FPS);
 		
 	}
 	
@@ -99,6 +100,12 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 		}
 	}
 
+	public void frameButtonClicked(View view){
+//		Log.e("Really","WHye");
+		Intent intent = new Intent(this, FrameRateDialog.class);
+		startActivity(intent);
+	}
+	
 	@Override
 	public void colorChanged(int color) {
 		AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);

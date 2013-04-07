@@ -24,28 +24,36 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/openButton"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Open" 
-            android:onClick="fileButtonClicked"/>
+            android:onClick="fileButtonClicked"
+            android:text="Open" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/playButton"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Play" 
-            android:onClick="playButtonClicked"/>
+            android:onClick="playButtonClicked"
+            android:text="Play" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/colorButton"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Color" 
-            android:onClick="colorButtonClicked"/>
+            android:onClick="colorButtonClicked"
+            android:text="Color" />
+
+        <Button
+            android:id="@+id/frameButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Frame" 
+            android:onClick="frameButtonClicked"/>
 
     </LinearLayout>
 

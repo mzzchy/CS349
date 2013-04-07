@@ -77,25 +77,12 @@ public class AnimationView extends View {
 	@Override
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
-		Paint paint = new Paint();
-		paint.setColor(Color.BLACK);
-		paint.setStrokeWidth(3);
-		paint.setStyle(Paint.Style.STROKE);
-		
-		Path path = new Path();
-		path.moveTo(50, 50);
-		for(int i = 0; i < 5;i +=1){
-			path.lineTo(50+i*10, 50+i*15);
-		}
-		canvas.drawPath(path, paint);
 		
 		if(animation != null &&animation.size()> 0){
 			for(Stroke s: animation){
 				s.onDraw(canvas);
 			}
 		}
-		
-		
 	}
 
 	public boolean isAnimationDone() {
