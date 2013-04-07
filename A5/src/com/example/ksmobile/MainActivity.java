@@ -41,28 +41,20 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 		
 	}
 	
-	public CharSequence[] listRaw(){
-		try {
-			return getBaseContext().getResources().getAssets().list("KSketch");
-//			for(String s: allFilesInPackage){
-//				Log.e("fileName", s);
-//			}
-			
-		} catch (IOException e) {
-			Log.e("ListFile","KSketch doesn't exist");
-		}
-		return null;
-	}
 	
 	public void fileButtonClicked(View view){
 		//SHow a new dialog
 		try {
+			//Get file from the resources
 			final CharSequence[] items = getBaseContext().getResources().getAssets().list("KSketch");
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("Open file...");
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog, int item) {
 //			    	Log.e("Item", (String) items[item]);
+			    	AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);
+					animeView.loadXMLFile(items[item].toString());
+					animeView.invalidate();
 			    }
 			});
 			AlertDialog alert = builder.create();
