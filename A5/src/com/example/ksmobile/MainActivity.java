@@ -3,6 +3,8 @@ package com.example.ksmobile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -16,6 +18,8 @@ import android.view.View;
 
 public class MainActivity extends Activity implements ColorPickerDialog.OnColorChangedListener{
 
+	Timer timer = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,9 +41,40 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 		colorPicker.show();
 	}
 	
+	private Runnable Timer_Tick = new Runnable() {
+	    public void run() {
+	    	AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);
+			   animeView.invalidate();
+//			   Log.e("Play","Y");
+			   if(animeView.isAnimationDone()){
+				   timer.cancel();
+//				   timer = null;
+//				   Log.e("Play","N");
+			   }
+
+	    }
+	};
+	
 	public void playButtonClicked(View view){
 		
+		//Schedule a timer task
+		AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);
+		//Ask if animeVIew has data else do nothing
+		if(!animeView.hasLoadXML()){
+			return ;
+		}
+		animeView.resetFrame();
+		timer = new Timer();
+		timer.schedule(new TimerTask() {          
+	        @Override
+	        public void run() {
+	        	runOnUiThread(Timer_Tick);
+	        }
+
+	    }, 0, 1000/100);
+		
 	}
+	
 	
 	
 	public void fileButtonClicked(View view){

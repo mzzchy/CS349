@@ -1,11 +1,14 @@
 package com.example.ksmobile;
 
 import java.io.IOException;
+
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import java.util.ArrayList;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -23,7 +26,9 @@ import android.util.Log;
 import android.view.View;
 
 public class AnimationView extends View {
-	Stroke stroke = null;
+//	Stroke stroke = null;
+	ArrayList<Stroke> animation = new ArrayList<Stroke>(0);
+	
 	public AnimationView(Context context) {
 		super(context);
 	}
@@ -53,13 +58,15 @@ public class AnimationView extends View {
 			doc.getDocumentElement().normalize();
 			Log.e("Node",doc.getDocumentElement().getNodeName());
 			NodeList nodeList = doc.getElementsByTagName("stroke");
-			stroke = new Stroke(nodeList.item(0));
+//			NodeList nodeList = doc.getChildNodes();
 			
-//			for (int i = 0; i < nodeList.getLength(); i++) {
-//				Node fstNode = nodeList.item(i);
-//				Stroke stroke = new Stroke(fstNode);
-//		
-//			}
+			//restart an animation, currently does not care about perisistence
+			animation.clear();
+//			animation = new ArrayList<Stroke>(0);
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Stroke stroke = new Stroke( nodeList.item(i));
+				animation.add(stroke);
+			}
 		} catch (IOException e) {
 //			e.printStackTrace();
 		} catch (SAXException e) {
@@ -82,9 +89,32 @@ public class AnimationView extends View {
 		}
 		canvas.drawPath(path, paint);
 		
-		if(stroke != null){
-			Log.e("Draw","DID DRAW");
-			stroke.onDraw(canvas);
+		if(animation != null &&animation.size()> 0){
+			for(Stroke s: animation){
+				s.onDraw(canvas);
+			}
+		}
+		
+		
+	}
+
+	public boolean isAnimationDone() {
+		for(Stroke s: animation){
+			if(!s.isStrokeDone()){
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	public boolean hasLoadXML() {
+		return !animation.isEmpty();
+	}
+
+	public void resetFrame() {
+		for(Stroke s: animation){
+			s.resetCurrentFrame();
 		}
 	}
 
