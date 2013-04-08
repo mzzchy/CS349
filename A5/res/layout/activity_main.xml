@@ -32,14 +32,6 @@
             android:text="Open" />
 
         <Button
-            android:id="@+id/playButton"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="playButtonClicked"
-            android:text="Play" />
-
-        <Button
             android:id="@+id/colorButton"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
@@ -55,13 +47,29 @@
             android:text="Frame" 
             android:onClick="frameButtonClicked"/>
 
+        <Button
+            android:id="@+id/playButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="playButtonClicked"
+            android:text="Play" />
+
     </LinearLayout>
 
     <com.example.ksmobile.AnimationView
         android:id="@+id/animeView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/anmieBar"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/linearLayout1" />
+
+    <SeekBar
+        android:id="@+id/anmieBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/animeView"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

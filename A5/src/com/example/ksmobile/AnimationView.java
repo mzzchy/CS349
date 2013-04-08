@@ -97,5 +97,21 @@ public class AnimationView extends View {
 			s.resetCurrentFrame();
 		}
 	}
+	
+	public int getAnimationLength(){
+		int max = -1;
+		for(Stroke s: animation){
+			max = Math.max(max, s.getFrameLength());
+		}
+		return max;
+	}
+
+	public void setCurrentAnimation(int current) {
+		if(hasLoadXML()){
+			for(Stroke s: animation){
+			s.setCurrentFrame(current);
+			}
+		}
+	}
 
 }

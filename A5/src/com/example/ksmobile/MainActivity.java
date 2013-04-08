@@ -16,15 +16,25 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnSeekBarChangeListener{
 
 	Timer timer = null;
 	static int FPS = 30;
+	SeekBar seekBar;
+	AnimationView animeView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		seekBar = (SeekBar) findViewById(R.id.anmieBar);
+		seekBar.setMax(100);
+		seekBar.setOnSeekBarChangeListener(this);
+		
+		animeView = (AnimationView)findViewById(R.id.animeView);
 	}
 
 	
@@ -38,8 +48,6 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume(){
 		super.onResume();
-//		Log.e("REsume","Call");
-		AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
 		animeView.setBackgroundColor(AnimationView.backgroundColor);
 	}
 	/**
@@ -53,29 +61,30 @@ public class MainActivity extends Activity {
 	
 	private Runnable Timer_Tick = new Runnable() {
 	    public void run() {
-	    	AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
-			   animeView.invalidate();
-			   if(animeView.isAnimationDone()){
+	    		
+	    		animeView.invalidate();
+	    		if(animeView.isAnimationDone()){
 				   timer.cancel();
-			   }
+	    		}
 
 	    }
 	};
 	
 	public void playButtonClicked(View view){
 		//Schedule a timer task
-		AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
-		//Ask if animeVIew has data else do nothing
 		if(!animeView.hasLoadXML()){
 			return ;
 		}
+		//Just reset
 		animeView.resetFrame();
+		seekBar.setProgress(0);
 		Log.e("FPS",""+FPS);
 		timer = new Timer();
 		timer.schedule(new TimerTask() {          
 	        @Override
 	        public void run() {
 	        	runOnUiThread(Timer_Tick);
+	        	seekBar.setProgress(seekBar.getProgress()+1);
 	        }
 
 	    }, 0, 1000/FPS);
@@ -101,9 +110,11 @@ public class MainActivity extends Activity {
 			builder.setTitle("Open file...");
 			builder.setItems(charSequenceItems, new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog, int item) {
-			    	AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
 					animeView.loadXMLFile(charSequenceItems[item].toString());
 					animeView.invalidate();
+					//Get the max from anime view?
+//					seekBar.setMax(animeView.getAnimationLength());
+//					Log.e("Seek",""+seekBar.getMax());
 			    }
 			});
 			AlertDialog alert = builder.create();
@@ -114,6 +125,28 @@ public class MainActivity extends Activity {
 	public void frameButtonClicked(View view){
 		Intent intent = new Intent(this, FrameRateDialog.class);
 		startActivity(intent);
+	}
+/**
+ * Seekbar protocols
+ */
+
+	@Override
+	public void onProgressChanged(SeekBar bar, int progress, boolean arg2) {
+		//Ask it to set the progress
+		animeView.setCurrentAnimation(progress);
+		animeView.invalidate();
+	}
+
+
+	@Override
+	public void onStartTrackingTouch(SeekBar bar) {
+		
+	}
+
+
+	@Override
+	public void onStopTrackingTouch(SeekBar bar) {
+		
 	}
 	
 

@@ -18,7 +18,7 @@
         android:layout_height="wrap_content" >
 
         <SeekBar
-            android:id="@+id/seekBar1"
+            android:id="@+id/anmieBar"
             android:layout_width="355dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />

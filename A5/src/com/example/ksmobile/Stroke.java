@@ -143,7 +143,16 @@ public class Stroke {
 
 
 	public void resetCurrentFrame() {
-		// TODO Auto-generated method stub
 		frame.currentFrame = 0;
+	}
+	
+	public int getFrameLength(){
+		return frame.transList.size();
+	}
+
+
+	public void setCurrentFrame(int current) {
+		current = Math.min(frame.transList.size()-1, current);
+		frame.currentFrame = current;
 	}
 }

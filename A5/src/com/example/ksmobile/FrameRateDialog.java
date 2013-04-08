@@ -17,7 +17,7 @@ public class FrameRateDialog extends Activity implements OnSeekBarChangeListener
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.frame_rate_dialog);
-		seekBar = (SeekBar) findViewById(R.id.seekBar1);
+		seekBar = (SeekBar) findViewById(R.id.anmieBar);
 		seekBar.setMax(55); //because min doesnt exit
 		seekBar.setProgress(currentProgress);
 		seekBar.setOnSeekBarChangeListener(this);
@@ -29,7 +29,6 @@ public class FrameRateDialog extends Activity implements OnSeekBarChangeListener
 
 	@Override
 	public void onProgressChanged(SeekBar seek, int progress, boolean arg2) {
-		// TODO Auto-generated method stub
 		String text = (progress+5)+"";
 		currentFrameRate.setText(text);
 	}
