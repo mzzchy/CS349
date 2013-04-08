@@ -19,16 +19,17 @@ public class ColorDialog extends Activity {
 		
 		switch(view.getId()){
 			case R.id.blueView:
-				rgb = Color.BLUE;
+				rgb = R.color.blue;
 				break;
 			case R.id.redView:
-				rgb = Color.RED;
+				rgb = R.color.red;
 				break;
 			case R.id.yellowView:
-				rgb = Color.YELLOW;
+				rgb = R.color.yellow;
 				break;
 			case R.id.greenView:
-				rgb = Color.GREEN;
+				rgb = R.color.green;
+				
 				break;
 			default:
 				break;

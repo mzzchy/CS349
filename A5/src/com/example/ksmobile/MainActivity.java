@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Log.e("Create", "BLAHBAL");
+//		Log.e("Create", "BLAHBAL");
 	}
 
 	
@@ -41,8 +41,6 @@ public class MainActivity extends Activity {
 	 * @param view
 	 */
 	public void colorButtonClicked(View view){
-//		ColorPickerDialog colorPicker = new ColorPickerDialog(this, this, 0);
-//		colorPicker.show();
 		Intent intent = new Intent(this, ColorDialog.class);
 		startActivity(intent);
 	}
