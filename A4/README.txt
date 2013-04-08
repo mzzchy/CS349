@@ -1,4 +1,4 @@
-CS349 Assignment 3
+This is a revert version of assignment 3
 
 Draw Mode - click or drag to draw
 
@@ -11,3 +11,5 @@ Select Mode - Use lasso to create a rectangle selected area.
 Play button - play the animation from current time frame
 
 Pause button - pause animation at current time frame
+
+Save button - save the current animation in xml format

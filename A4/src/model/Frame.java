@@ -68,7 +68,11 @@ public class Frame {
 	
 	//Whether currenf Frame
 	public boolean isCurrentFrameVisible(){
-		return (startFrame<= currentFrame && (endFrame == -1 ||currentFrame < endFrame));
+		if(endFrame == -1 ){
+			return (startFrame<= currentFrame); 
+		}else{
+			return (startFrame<= currentFrame && currentFrame < endFrame);
+		}
 	}
 	
 	/**
