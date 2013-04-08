@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener{
 		setContentView(R.layout.activity_main);
 		
 		seekBar = (SeekBar) findViewById(R.id.anmieBar);
-		seekBar.setMax(100);
+		seekBar.setMax(150);
 		seekBar.setOnSeekBarChangeListener(this);
 		
 		animeView = (AnimationView)findViewById(R.id.animeView);

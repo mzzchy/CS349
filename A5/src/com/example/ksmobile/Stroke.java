@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -51,15 +50,8 @@ public class Stroke {
 		
 		private Point parsePoint(Node node){
 			   NodeList nodeList = node.getChildNodes();
-//			      Log.e("x and y",((Node) nodeList.item(0)).getNodeValue());
 				String [] s= ((Node) nodeList.item(0)).getNodeValue().split(" ");
 				Point p =new Point(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
-//				try{
-//					p = new Point(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
-//				}catch(Exception e){
-//					p = new Point();
-//					Log.e("X and Y",s[0]+" "+s[1]);
-//				}
 				return p;
 				
 		}

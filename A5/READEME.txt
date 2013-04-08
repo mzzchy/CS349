@@ -1,0 +1,14 @@
+Assignemnt 5
+
+The application is built on min adroind sdk 14 and target sdk is 17.
+The main activity has 4 buttons. 
+
+Open: open a xml file store in sdcard (please drag and drop the file to mnt/sdcard in file exploere) and will show an alert dialog for the user to choose a file.
+Play: paly the xml file animation from start
+Color: Choose a background color, simply click on the color platte.
+Frame: Set the frame rate, range from 5 to 60 FPS
+Seekbar: scroll to see animation static frame. Maximum is set to 100.
+
+I am using my own assignemnt 3.
+
+No enhancements has been done.
