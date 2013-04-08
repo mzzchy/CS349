@@ -10,12 +10,8 @@ import android.widget.TextView;
 
 public class FrameRateDialog extends Activity implements OnSeekBarChangeListener{
 
-	public FrameRateDialog() {
-		// TODO Auto-generated constructor stub
-	}
-
+	static int currentProgress = 25;
 	SeekBar seekBar;
-//	Button setButton;
 	TextView currentFrameRate;
 	//5 t-0 60 
 	@Override
@@ -24,12 +20,12 @@ public class FrameRateDialog extends Activity implements OnSeekBarChangeListener
 		setContentView(R.layout.frame_rate_dialog);
 		seekBar = (SeekBar) findViewById(R.id.seekBar1);
 		seekBar.setMax(55); //because min doesnt exit
-		seekBar.setProgress(30);
+		seekBar.setProgress(currentProgress);
 		seekBar.setOnSeekBarChangeListener(this);
 		
 		currentFrameRate = (TextView) findViewById(R.id.currentFraneRate);
-		//Be care ful about seek bar min value
-//		setButton = (Button) findViewById(R.id.setButton);
+		String text = (currentProgress+5)+"";
+		currentFrameRate.setText(text);
 	}
 
 	@Override
@@ -41,7 +37,8 @@ public class FrameRateDialog extends Activity implements OnSeekBarChangeListener
 
 	public void setButtonClicked(View view){
 		//Get the current frame
-		MainActivity.FPS = seekBar.getProgress()+5;
+		currentProgress = seekBar.getProgress();
+		MainActivity.FPS = currentProgress+5;
 		finish();
 	}
 	

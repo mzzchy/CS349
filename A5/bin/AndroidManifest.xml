@@ -24,6 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.ksmobile.FrameRateDialog"></activity>
+        <activity android:name="com.example.ksmobile.ColorDialog"></activity>
     </application>
 
 </manifest>

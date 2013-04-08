@@ -28,7 +28,7 @@ import android.view.View;
 public class AnimationView extends View {
 //	Stroke stroke = null;
 	ArrayList<Stroke> animation = new ArrayList<Stroke>(0);
-	
+	static int backgroundColor = Color.WHITE;
 	public AnimationView(Context context) {
 		super(context);
 	}
@@ -77,13 +77,18 @@ public class AnimationView extends View {
 	@Override
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
-		
+		setBackgroundColor(backgroundColor);
 		if(animation != null &&animation.size()> 0){
 			for(Stroke s: animation){
 				s.onDraw(canvas);
 			}
 		}
 	}
+	
+//	public static void setRGB(int rgb){
+//		setBackgroundColor(rgb);
+//		invalidate();
+//	}
 
 	public boolean isAnimationDone() {
 		for(Stroke s: animation){

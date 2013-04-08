@@ -17,7 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
-public class MainActivity extends Activity implements ColorPickerDialog.OnColorChangedListener{
+public class MainActivity extends Activity {
 
 	Timer timer = null;
 	static int FPS = 30;
@@ -25,8 +25,11 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		Log.e("Create", "BLAHBAL");
 	}
 
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -38,13 +41,15 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 	 * @param view
 	 */
 	public void colorButtonClicked(View view){
-		ColorPickerDialog colorPicker = new ColorPickerDialog(this, this, 0);
-		colorPicker.show();
+//		ColorPickerDialog colorPicker = new ColorPickerDialog(this, this, 0);
+//		colorPicker.show();
+		Intent intent = new Intent(this, ColorDialog.class);
+		startActivity(intent);
 	}
 	
 	private Runnable Timer_Tick = new Runnable() {
 	    public void run() {
-	    	AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);
+	    	AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
 			   animeView.invalidate();
 //			   Log.e("Play","Y");
 			   if(animeView.isAnimationDone()){
@@ -59,12 +64,13 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 	public void playButtonClicked(View view){
 		
 		//Schedule a timer task
-		AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);
+		AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
 		//Ask if animeVIew has data else do nothing
 		if(!animeView.hasLoadXML()){
 			return ;
 		}
 		animeView.resetFrame();
+		Log.e("FPS",""+FPS);
 		timer = new Timer();
 		timer.schedule(new TimerTask() {          
 	        @Override
@@ -77,7 +83,6 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 	}
 	
 	
-	
 	public void fileButtonClicked(View view){
 		//SHow a new dialog
 		try {
@@ -88,7 +93,7 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog, int item) {
 //			    	Log.e("Item", (String) items[item]);
-			    	AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);
+			    	AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
 					animeView.loadXMLFile(items[item].toString());
 					animeView.invalidate();
 			    }
@@ -101,16 +106,9 @@ public class MainActivity extends Activity implements ColorPickerDialog.OnColorC
 	}
 
 	public void frameButtonClicked(View view){
-//		Log.e("Really","WHye");
 		Intent intent = new Intent(this, FrameRateDialog.class);
 		startActivity(intent);
 	}
 	
-	@Override
-	public void colorChanged(int color) {
-		AnimationView animeView = (AnimationView)findViewById(R.id.animationView1);
-		animeView.setBackgroundColor(color);
-		
-	}
 
 }

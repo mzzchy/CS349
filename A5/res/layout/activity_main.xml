@@ -58,7 +58,7 @@
     </LinearLayout>
 
     <com.example.ksmobile.AnimationView
-        android:id="@+id/animationView1"
+        android:id="@+id/animeView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

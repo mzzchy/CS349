@@ -3,6 +3,8 @@
 
     <string name="app_name">KSmobile</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-
+    <color name="red">#FFFF6600</color>
+    <color name="yellow">#FFFFFF00</color>
+	<color name="green">#FF66FF00</color>
+	<color name="blue">#FF0066CC</color>
 </resources>
