@@ -2,17 +2,17 @@ package com.example.ksmobile;
 
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-//import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -25,8 +25,6 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-//		Log.e("Create", "BLAHBAL");
 	}
 
 	
@@ -49,18 +47,14 @@ public class MainActivity extends Activity {
 	    public void run() {
 	    	AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
 			   animeView.invalidate();
-//			   Log.e("Play","Y");
 			   if(animeView.isAnimationDone()){
 				   timer.cancel();
-//				   timer = null;
-//				   Log.e("Play","N");
 			   }
 
 	    }
 	};
 	
 	public void playButtonClicked(View view){
-		
 		//Schedule a timer task
 		AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
 		//Ask if animeVIew has data else do nothing
@@ -82,27 +76,33 @@ public class MainActivity extends Activity {
 	
 	
 	public void fileButtonClicked(View view){
-		//SHow a new dialog
-		try {
-			//Get file from the resources
-			final CharSequence[] items = getBaseContext().getResources().getAssets().list("KSketch");
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		File sdcard = Environment.getExternalStorageDirectory();
+		if (sdcard.isDirectory()){
+		    String files[] = sdcard.list();
+		    List<String> listItems = new ArrayList<String>(0);
+		    for(String fileName: files){
+		    	if(fileName.endsWith(".xml")){
+		    		listItems.add(fileName);
+		    		Log.e("", fileName);
+		    	}
+		    }
+		    
+		    final CharSequence[] charSequenceItems = listItems.toArray(new CharSequence[listItems.size()]);
+		    
+		    AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("Open file...");
-			builder.setItems(items, new DialogInterface.OnClickListener() {
+			builder.setItems(charSequenceItems, new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog, int item) {
-//			    	Log.e("Item", (String) items[item]);
 			    	AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
-					animeView.loadXMLFile(items[item].toString());
+					animeView.loadXMLFile(charSequenceItems[item].toString());
 					animeView.invalidate();
 			    }
 			});
 			AlertDialog alert = builder.create();
 			alert.show();
-		} catch (IOException e) {
-			Log.e("ListFile","KSketch doesn't exist");
 		}
 	}
-
+	
 	public void frameButtonClicked(View view){
 		Intent intent = new Intent(this, FrameRateDialog.class);
 		startActivity(intent);

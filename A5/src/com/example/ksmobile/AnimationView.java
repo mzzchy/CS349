@@ -1,8 +1,7 @@
 package com.example.ksmobile;
 
+import java.io.File;
 import java.io.IOException;
-
-import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -11,16 +10,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -43,10 +39,8 @@ public class AnimationView extends View {
 	//Works
 	public void loadXMLFile(String fileName){
 		Log.e("fileName",fileName);
-		
-		AssetManager am = getContext().getAssets();
+		File xmlFile = new File(Environment.getExternalStorageDirectory().toString() + "/"+fileName);
 		try {
-			InputStream is = am.open("KSketch/"+fileName);
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = null;
 			try {
@@ -54,15 +48,13 @@ public class AnimationView extends View {
 			} catch (ParserConfigurationException e) {
 				e.printStackTrace();
 			}
-			Document doc = db.parse(is);
+			Document doc = db.parse(xmlFile);
 			doc.getDocumentElement().normalize();
 			Log.e("Node",doc.getDocumentElement().getNodeName());
 			NodeList nodeList = doc.getElementsByTagName("stroke");
-//			NodeList nodeList = doc.getChildNodes();
 			
 			//restart an animation, currently does not care about perisistence
 			animation.clear();
-//			animation = new ArrayList<Stroke>(0);
 			for (int i = 0; i < nodeList.getLength(); i++) {
 				Stroke stroke = new Stroke( nodeList.item(i));
 				animation.add(stroke);
@@ -85,10 +77,6 @@ public class AnimationView extends View {
 		}
 	}
 	
-//	public static void setRGB(int rgb){
-//		setBackgroundColor(rgb);
-//		invalidate();
-//	}
 
 	public boolean isAnimationDone() {
 		for(Stroke s: animation){
