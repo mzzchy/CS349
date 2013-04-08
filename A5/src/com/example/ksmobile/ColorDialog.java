@@ -18,25 +18,17 @@ public class ColorDialog extends Activity {
 	public void onColorViewClicked(View view){
 		
 		switch(view.getId()){
-			case R.id.blueView:
-				rgb = R.color.blue;
-				break;
-			case R.id.redView:
-				rgb = R.color.red;
-				break;
-			case R.id.yellowView:
-				rgb = R.color.yellow;
-				break;
-			case R.id.greenView:
-				rgb = R.color.green;
-				
-				break;
-			default:
-				break;
+			case R.id.whiteView: rgb = Color.WHITE; break;
+			case R.id.redView: rgb = Color.RED; break;
+			case R.id.yellowView: rgb = Color.YELLOW; break;
+			case R.id.greenView: rgb = Color.GREEN; break;
+			case R.id.blueView: rgb = Color.BLUE; break;
+			case R.id.purpleView: rgb = Color.MAGENTA; break;
+			default: break;
 		}
 		Log.e("Color", ""+rgb);
 		AnimationView.backgroundColor = rgb;
-		
+		finish();
 	}
 	
 }

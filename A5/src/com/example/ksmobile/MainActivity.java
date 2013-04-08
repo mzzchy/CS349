@@ -34,6 +34,14 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	@Override
+	protected void onResume(){
+		super.onResume();
+//		Log.e("REsume","Call");
+		AnimationView animeView = (AnimationView)findViewById(R.id.animeView);
+		animeView.setBackgroundColor(AnimationView.backgroundColor);
+	}
 	/**
 	 * List of button related function
 	 * @param view

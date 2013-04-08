@@ -11,10 +11,13 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int blue=0x7f060003;
-        public static final int green=0x7f060002;
-        public static final int red=0x7f060000;
-        public static final int yellow=0x7f060001;
+        public static final int blue=0x7f060005;
+        public static final int green=0x7f060004;
+        public static final int orange=0x7f060002;
+        public static final int purple=0x7f060006;
+        public static final int red=0x7f060001;
+        public static final int white=0x7f060000;
+        public static final int yellow=0x7f060003;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -30,7 +33,7 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f090010;
+        public static final int action_settings=0x7f090012;
         public static final int animeView=0x7f090006;
         public static final int blueView=0x7f09000d;
         public static final int cancelButton=0x7f09000b;
@@ -42,10 +45,12 @@ public final class R {
         public static final int linearLayout1=0x7f090000;
         public static final int openButton=0x7f090002;
         public static final int playButton=0x7f090003;
+        public static final int purpleView=0x7f090011;
         public static final int redView=0x7f09000c;
         public static final int seekBar1=0x7f090008;
         public static final int setButton=0x7f09000a;
         public static final int space1=0x7f090001;
+        public static final int whiteView=0x7f090010;
         public static final int yellowView=0x7f09000e;
     }
     public static final class layout {

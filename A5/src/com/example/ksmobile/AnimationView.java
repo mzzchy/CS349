@@ -69,7 +69,7 @@ public class AnimationView extends View {
 	@Override
 	protected void onDraw(Canvas canvas){
 		super.onDraw(canvas);
-		setBackgroundColor(backgroundColor);
+//		setBackgroundColor(backgroundColor);
 		if(animation != null &&animation.size()> 0){
 			for(Stroke s: animation){
 				s.onDraw(canvas);

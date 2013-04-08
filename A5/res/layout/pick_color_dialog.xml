@@ -10,28 +10,48 @@
         android:id="@+id/blueView"
         android:layout_width="378dp"
         android:layout_height="21dp"
-        android:background="@color/blue" 
-        android:onClick="onColorViewClicked"/>
+        android:layout_weight="0.20"
+        android:background="@color/blue"
+        android:onClick="onColorViewClicked" />
 
     <View
         android:id="@+id/redView"
         android:layout_width="378dp"
         android:layout_height="21dp"
-        android:background="@color/red" 
-        android:onClick="onColorViewClicked"/>
+        android:layout_weight="0.18"
+        android:background="@color/red"
+        android:onClick="onColorViewClicked" />
 
     <View
         android:id="@+id/yellowView"
         android:layout_width="378dp"
         android:layout_height="21dp"
-        android:background="@color/yellow" 
-        android:onClick="onColorViewClicked"/>
+        android:layout_weight="0.22"
+        android:background="@color/yellow"
+        android:onClick="onColorViewClicked" />
 
     <View
         android:id="@+id/greenView"
         android:layout_width="378dp"
         android:layout_height="21dp"
-        android:background="@color/green" 
-        android:onClick="onColorViewClicked"/>
+        android:layout_weight="0.20"
+        android:background="@color/green"
+        android:onClick="onColorViewClicked" />
+
+    <View
+        android:id="@+id/whiteView"
+        android:layout_width="378dp"
+        android:layout_height="21dp"
+        android:layout_weight="0.18"
+        android:background="@color/white"
+        android:onClick="onColorViewClicked" />
+
+    <View
+        android:id="@+id/purpleView"
+        android:layout_width="378dp"
+        android:layout_height="21dp"
+        android:layout_weight="0.22"
+        android:background="@color/purple"
+        android:onClick="onColorViewClicked" />
 
 </LinearLayout>
